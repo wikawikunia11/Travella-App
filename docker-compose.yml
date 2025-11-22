@@ -6,18 +6,22 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:8080
+    restart: unless-stopped
 
   backend:
     build: ./backend
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=db
-      - DB_USER=app
-      - DB_PASS=secret
-      - DB_NAME=appdb
+      DB_HOST: db
+      DB_USER: app
+      DB_PASS: secret
+      DB_NAME: appdb
     depends_on:
       - db
+    restart: unless-stopped
 
   db:
     image: postgres:16
@@ -28,6 +32,7 @@ services:
       POSTGRES_DB: appdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d  # pliki init.sql i seed.sql
     ports:
       - "5432:5432"
 
