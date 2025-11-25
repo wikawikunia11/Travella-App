@@ -1,12 +1,17 @@
 services:
 
-  frontend:
-    build: ./frontend
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: appdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d  # pliki init.sql i seed.sql
     ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    restart: unless-stopped
+      - "5432:5432"
 
   backend:
     build: ./backend
@@ -21,18 +26,13 @@ services:
       - db
     restart: unless-stopped
 
-  db:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: appdb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./db:/docker-entrypoint-initdb.d  # pliki init.sql i seed.sql
+  frontend:
+    build: ./frontend
     ports:
-      - "5432:5432"
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:

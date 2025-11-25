@@ -10,18 +10,15 @@ function UserProfile() {
   useEffect(() => {
     fetch(`http://localhost:8080/api/users/${id}`)
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Downloading user info failed');
-        }
-        return response.json();
-      })
+        if (!response.ok) throw new Error("Failed to fetch user");
+        return response.json();})
       .then(data => {setUser(data); setLoading(false);})
-      .catch(err => {setError(err.message); setLoading(false);
-});
+      .catch(err => {setError(err.message); setLoading(false);});
   }, [id]); // 'hook' starts when id changed
 
-  if (loading) return <p>Ładowanie...</p>;
-  if (error) return <p>Błąd: {error}</p>;
+  if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error}</p>;
+if (!user) return <p>No user data</p>;
 
   return (
     <div>

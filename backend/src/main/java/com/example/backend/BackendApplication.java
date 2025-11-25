@@ -21,7 +21,8 @@ public class BackendApplication {
 		return "Hello from the backend! balbinka wita";
 	}
 
-	@GetMapping("/api/user/{id}")
+	@CrossOrigin(origins = "http://localhost:3000")
+	@GetMapping("/api/users/{id}")
 	public User getUser(@PathVariable Long id) {
 		 return new User(
             id,

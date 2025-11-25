@@ -23,16 +23,6 @@ function App() {
   );
   */
 
-  // return (
-  //   <div className="App">
-  //     <button onClick={toggleProfile}>
-  //       {showProfile ? 'Ukryj profil' : 'Pokaż profil'}
-  //     </button>
-
-  //     {showProfile && <UserProfile />}
-  //   </div>
-  // );
-
   return (
     <Router>
       <Routes>
