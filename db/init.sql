@@ -1,0 +1,3 @@
+CREATE TABLE user (
+    id NUMBER(4) PRIMARY KEY
+)

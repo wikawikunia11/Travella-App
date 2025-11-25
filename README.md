@@ -25,3 +25,7 @@ Aplikacja webowa w stylu social media do dzielenia się wrażeniami z podróży
 2. Dodawanie zdjęć do postów
 3. Przycisk do polubienia posta
 4. Dodawanie komentarzy do postów
+
+
+docker compose up -d --build
+docker compose down
