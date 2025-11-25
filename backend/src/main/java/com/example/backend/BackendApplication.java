@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -20,4 +21,13 @@ public class BackendApplication {
 		return "Hello from the backend! balbinka wita";
 	}
 
+	@GetMapping("/api/user/{id}")
+	public User getUser(@PathVariable Long id) {
+		 return new User(
+            id,
+            "Jan Kowalski",
+            "kowal",
+            "jan.kowalski@example.com"
+        );
+	}
 }
