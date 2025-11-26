@@ -1,5 +1,34 @@
 services:
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: app
+      DB_PASS: secret
+      DB_NAME: appdb
+    depends_on:
+      - db
+    restart: unless-stopped
+
   db:
     image: postgres:16
     restart: always
