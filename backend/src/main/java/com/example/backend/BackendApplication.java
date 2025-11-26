@@ -15,13 +15,13 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
+	@CrossOrigin(origins = "http://localhost:5173")
 	@GetMapping("/api/message")
 	public String getMessage() {
 		return "Hello from the backend! balbinka wita";
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
+	@CrossOrigin(origins = "http://localhost:5173")
 	@GetMapping("/api/users/{id}")
 	public User getUser(@PathVariable Long id) {
 		 return new User(
