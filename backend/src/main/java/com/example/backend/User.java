@@ -1,10 +1,25 @@
 package com.example.backend;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table; // by jawnie nazwać tabelę
+
+@Entity 
+@Table(name = "user_table")
 public class User {
+
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String nickname;
     private String email;
+
+    // wymagany przez JPA
+    public User() {
+    }
 
     public User(Long id, String name, String nickname, String email) {
         this.id = id;
