@@ -14,9 +14,8 @@ function Home() {
   return (
     <div>
       <header>Welcome to Travel-Fun</header>
-      <Link to="/profile/1">
-        <button>Pokaż profil</button>
-      </Link>
+      <Link to="/profile/1"><button>Show profile</button></Link>
+      <Link to="/map"><button>View map</button></Link>
       {message || 'Loading message from backend...'}
     </div>
   );
