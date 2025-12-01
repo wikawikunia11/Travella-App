@@ -12,7 +12,9 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @SpringBootApplication
@@ -50,8 +52,8 @@ public class BackendApplication {
         return userOptional.orElse(null);
     }
 
-    //@Autowired
-    //private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     //TODO
     //add post api endpoint to create new user (email drss) http 400 when email adress is already existed in db
@@ -65,8 +67,9 @@ public class BackendApplication {
                 HttpStatus.BAD_REQUEST
             );
         }
-        //String encodedPassword = passwordEncoder.encode(newUser.getPassword());
-       // newUser.setPassword(encodedPassword);
+        // password encoding
+        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        newUser.setPassword(encodedPassword);
         User savedUser = userRepository.save(newUser);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
@@ -93,5 +96,6 @@ public class BackendApplication {
 
     //update user Path mappring or put mapping -> check difference
 
+    // login user based on username and password
 
 }
