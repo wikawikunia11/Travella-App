@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 function UserProfile() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const defaultAvatar = "/vite.svg";
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/users/${id}`)
@@ -21,11 +22,27 @@ if (error) return <p>Error: {error}</p>;
 if (!user) return <p>No user data</p>;
 
   return (
-    <div>
-      <h1>Profile {user.id}</h1>
-      <p>Name: {user.name}</p>
-      <p>Nickname: {user.nickname}</p>
-      <p>Email: {user.email}</p>
+    <div style={{ marginLeft: "20px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+        <img
+          src={user.avatarUrl || defaultAvatar}
+          alt="profile"
+          style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+        />
+        <h1 style={{ margin: 0 }}>{user.nickname}</h1>
+      </div>
+
+      <div>
+        <p style={{ margin: "3px 0" }}>{user.name} {user.surname}</p>
+        <p style={{ margin: "3px 0", fontSize: "0.9rem" }}><strong>Email:</strong> {user.email}</p>
+        {user.biography && (<p style={{ margin: "3px 0" }}><strong>Bio:</strong> {user.biography}</p>)}
+      </div>
+
+      <div style={{ marginTop: "30px", display: "flex", gap: "5px" }}>
+        <Link to="/"> <button>Main page</button> </Link>
+        <button>Edit profile</button>
+        <button>Posts</button>
+      </div>
     </div>
   );
 }

@@ -28,7 +28,8 @@ public class BackendApplication {
             id,
             "Jan Kowalski",
             "kowal",
-            "jan.kowalski@example.com"
+            "jan.kowalski@example.com",
+			"Kowal to styl zycia"
         );
 	}
 }
