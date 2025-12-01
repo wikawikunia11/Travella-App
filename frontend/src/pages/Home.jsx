@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import MapView from './MapView';
 
 function Home() {
   const [message, setMessage] = useState('');
@@ -12,11 +13,17 @@ function Home() {
   }, [])
 
   return (
-    <div>
-      <header>Welcome to Travel-Fun</header>
-      <Link to="/profile/1"><button>Show profile</button></Link>
-      <Link to="/map"><button>View map</button></Link>
-      {message || 'Loading message from backend...'}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
+      <header style={{ fontSize: "2em", marginBottom: "20px" }}>Welcome to Travel-Fun</header>
+
+      <div style={{ display: "flex", gap: "10px" }}>
+        <Link to="/profile/1"><button>Show profile</button></Link>
+        <Link to="/map"><button>View map</button></Link>
+      </div>
+
+      <p>{message || 'Loading message from backend...'}</p>
+
+      <MapView width="800px" height="400px" />
     </div>
   );
 }
