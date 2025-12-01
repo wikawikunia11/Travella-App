@@ -22,28 +22,28 @@ if (error) return <p>Error: {error}</p>;
 if (!user) return <p>No user data</p>;
 
   return (
-    <div style={{ marginLeft: "20px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-        <img
-          src={user.avatarUrl || defaultAvatar}
-          alt="profile"
-          style={{ width: "80px", height: "80px", borderRadius: "50%" }}
-        />
-        <h1 style={{ margin: 0 }}>{user.nickname}</h1>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
+  <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+    <img
+      src={user.avatarUrl || defaultAvatar}
+      alt="profile"
+      style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+    />
+    <h1 style={{ margin: 0 }}>{user.nickname}</h1>
+  </div>
 
-      <div>
-        <p style={{ margin: "3px 0" }}>{user.name} {user.surname}</p>
-        <p style={{ margin: "3px 0", fontSize: "0.9rem" }}><strong>Email:</strong> {user.email}</p>
-        {user.biography && (<p style={{ margin: "3px 0" }}><strong>Bio:</strong> {user.biography}</p>)}
-      </div>
+  <div style={{ textAlign: "center" }}>
+    <p style={{ margin: "3px 0" }}>{user.name} {user.surname}</p>
+    <p style={{ margin: "3px 0", fontSize: "0.9rem" }}><strong>Email:</strong> {user.email}</p>
+    {user.biography && (<p style={{ margin: "3px 0" }}><strong>Bio:</strong> {user.biography}</p>)}
+  </div>
 
-      <div style={{ marginTop: "30px", display: "flex", gap: "5px" }}>
-        <Link to="/"> <button>Main page</button> </Link>
-        <button>Edit profile</button>
-        <button>Posts</button>
-      </div>
-    </div>
+  <div style={{ display: "flex", gap: "5px" }}>
+    <Link to="/"> <button>Main page</button> </Link>
+    <button>Edit profile</button>
+    <button>Posts</button>
+  </div>
+</div>
   );
 }
 
