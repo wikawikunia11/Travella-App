@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.backend.LoginRequest;
 
 
 @SpringBootApplication
@@ -38,6 +39,7 @@ public class BackendApplication {
         return userRepository.findAll();
     }
 
+    // czy wystawiac??
     @GetMapping("/api/users/{id}")
     public User getUser(@PathVariable Long id) {
         //error 500
@@ -45,7 +47,7 @@ public class BackendApplication {
         return userOptional.orElse(null);
     }
 
-    @GetMapping("/api/users/{username}")
+    @GetMapping("/api/users/username/{username}")
     public User getUsername(@PathVariable String username) {
         //error 500
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -97,5 +99,34 @@ public class BackendApplication {
     //update user Path mappring or put mapping -> check difference
 
     // login user based on username and password
+    // http 400 - bad request
+    // http 200 - ok
+    @PostMapping("/api/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(
+                "Nazwa użytkownika jest nieprawidłowa.",
+                HttpStatus.BAD_REQUEST // 400 Bad Request
+            );
+        }
 
+        User user = userOptional.get();
+        boolean passwordMatches = passwordEncoder.matches(
+            loginRequest.getPassword(), // raw data from frontend
+            user.getPassword()          // hashed password from db
+        );
+
+        if (passwordMatches) {
+            return new ResponseEntity<>(
+                "Logowanie udane.",
+                HttpStatus.OK // 200 OK
+            );
+        } else {
+            return new ResponseEntity<>(
+                "Hasło jest nieprawidłowe.",
+                HttpStatus.BAD_REQUEST // 400 Bad Request
+            );
+        }
+    }
 }
