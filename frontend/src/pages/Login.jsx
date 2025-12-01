@@ -15,7 +15,7 @@ function Login() {
       <div className={styles.right_panel}>
         <div className={styles.app_info}>
           <img src={logo} alt="App Logo" className={styles.logo}/>
-          <span className={styles.title}>TravelApp</span>
+          <span className={styles.title}>Travella</span>
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Welcome back!</header>
