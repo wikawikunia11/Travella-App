@@ -11,7 +11,10 @@ L.Icon.Default.mergeOptions({
     "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-export default function MapView({ width = "600px", height = "400px" }) {
+export default function MapView({ width = "600px", height = "400px", markerPosition }) {
+  const defaultPosition = [52.2297, 21.0122];
+  const position = markerPosition || defaultPosition;
+
   return (
     <div
       style={{
@@ -31,7 +34,7 @@ export default function MapView({ width = "600px", height = "400px" }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap"
         />
-        <Marker position={[52.2297, 21.0122]}>
+        <Marker position={position}>
           <Popup>To jest marker w Leaflet (MapView)</Popup>
         </Marker>
       </MapContainer>

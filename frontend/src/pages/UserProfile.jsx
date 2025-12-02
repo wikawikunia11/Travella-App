@@ -15,7 +15,7 @@ function UserProfile() {
         return response.json();})
       .then(data => {setUser(data); setLoading(false);})
       .catch(err => {setError(err.message); setLoading(false);});
-  }, [id]); // 'hook' starts when id changed
+  }, [id]);
 
   if (loading) return <p>Loading...</p>;
 if (error) return <p>Error: {error}</p>;
@@ -34,13 +34,12 @@ if (!user) return <p>No user data</p>;
 
   <div style={{ textAlign: "center" }}>
     <p style={{ margin: "3px 0" }}>{user.name} {user.surname}</p>
-    <p style={{ margin: "3px 0", fontSize: "0.9rem" }}><strong>Email:</strong> {user.email}</p>
     {user.biography && (<p style={{ margin: "3px 0" }}><strong>Bio:</strong> {user.biography}</p>)}
   </div>
 
   <div style={{ display: "flex", gap: "5px" }}>
     <Link to="/"> <button>Main page</button> </Link>
-    <button>Edit profile</button>
+    <Link to={`/profile/${id}/edit`}> <button>Edit profile</button> </Link>
     <button>Posts</button>
   </div>
 </div>

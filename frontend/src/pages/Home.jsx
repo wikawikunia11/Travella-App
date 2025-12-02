@@ -18,12 +18,12 @@ function Home() {
 
       <div style={{ display: "flex", gap: "10px" }}>
         <Link to="/profile/1"><button>Show profile</button></Link>
-        <Link to="/map"><button>View map</button></Link>
+        <button>Log out</button>
       </div>
 
       <p>{message || 'Loading message from backend...'}</p>
 
-      <MapView width="800px" height="400px" />
+      <MapView width="800px" height="400px" markerPosition={[50.0647, 19.9450]} />
     </div>
   );
 }
