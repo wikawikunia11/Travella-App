@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,5 +129,24 @@ public class BackendApplication {
                 HttpStatus.BAD_REQUEST // 400 Bad Request
             );
         }
+    }
+
+    @PutMapping("/api/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>("Użytkownik nie istnieje.", HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        user.setUsername(updatedUser.getUsername());
+        user.setName(updatedUser.getName());
+        user.setSurname(updatedUser.getSurname());
+        user.setBiography(updatedUser.getBiography());
+        user.setProfilePic(updatedUser.getProfilePic());
+
+        userRepository.save(user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

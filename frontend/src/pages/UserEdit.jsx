@@ -5,12 +5,11 @@ function UserEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    nickname: '',
+    username: '',
     name: '',
     surname: '',
-    email: '',
     biography: '',
-    avatarUrl: ''
+    profilePic: ''
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +21,16 @@ function UserEdit() {
         if (!response.ok) throw new Error("Failed to fetch user");
         return response.json();
       })
-      .then(data => { setUser(data); setLoading(false); })
+      .then(data => {
+        setUser({
+          username: data.username || '',
+          name: data.name || '',
+          surname: data.surname || '',
+          biography: data.biography || '',
+          profilePic: data.profilePic || ''
+        });
+        setLoading(false);
+      })
       .catch(err => { setError(err.message); setLoading(false); });
   }, [id]);
 
@@ -52,16 +60,17 @@ function UserEdit() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
+
       <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <img
-          src={user.avatarUrl || defaultAvatar}
+          src={user.profilePic || defaultAvatar}
           alt="profile"
           style={{ width: "80px", height: "80px", borderRadius: "50%" }}
         />
         <input
           type="text"
-          name="nickname"
-          value={user.nickname}
+          name="username"
+          value={user.username}
           onChange={handleChange}
           style={{ fontSize: "1.5rem" }}
         />
@@ -82,13 +91,6 @@ function UserEdit() {
           onChange={handleChange}
           placeholder="Last name"
         />
-        <input
-          type="email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
-          placeholder="Email"
-        />
         <textarea
           name="biography"
           value={user.biography}
@@ -98,15 +100,15 @@ function UserEdit() {
         />
         <input
           type="text"
-          name="avatarUrl"
-          value={user.avatarUrl}
+          name="profilePic"
+          value={user.profilePic}
           onChange={handleChange}
-          placeholder="Avatar URL"
+          placeholder="Profile picture URL"
         />
       </div>
 
       <div style={{ display: "flex", gap: "5px" }}>
-        <Link to={`/profile/${id}`}> <button>Cancel</button> </Link>
+        <Link to={`/profile/${id}`}><button>Cancel</button></Link>
         <button onClick={handleSave}>Save</button>
       </div>
     </div>
