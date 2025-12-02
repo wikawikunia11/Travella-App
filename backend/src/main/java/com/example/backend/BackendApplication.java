@@ -135,7 +135,7 @@ public class BackendApplication {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
-            return new ResponseEntity<>("Użytkownik nie istnieje.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User doesn't exist.", HttpStatus.NOT_FOUND);
         }
 
         User user = userOptional.get();
