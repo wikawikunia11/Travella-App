@@ -5,7 +5,7 @@ import UserProfile from './pages/UserProfile';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registration from './pages/Registration';
-import MapView from './pages/MapView'
+import UserEdit from './pages/UserEdit';
 
 function App() {
   return (
@@ -13,9 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/profile/:id/edit" element={<UserEdit />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
-        <Route path="/map" element={<MapView />} />
       </Routes>
     </Router>
   );
