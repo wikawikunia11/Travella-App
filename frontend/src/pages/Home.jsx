@@ -17,7 +17,7 @@ function Home() {
       <header style={{ fontSize: "2em", marginBottom: "20px" }}>Welcome to Travel-Fun</header>
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <Link to="/profile/1"><button>Show profile</button></Link>
+        <Link to="/profile/kowal_j"><button>Show profile</button></Link>  {/* TODO: replace kowal_j*/}
         <button>Log out</button>
       </div>
 

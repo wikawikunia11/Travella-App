@@ -5,7 +5,6 @@ function UserEdit() {
   const { username } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    username: '',
     name: '',
     surname: '',
     biography: '',
@@ -69,13 +68,7 @@ function UserEdit() {
           alt="profile"
           style={{ width: "80px", height: "80px", borderRadius: "50%" }}
         />
-        <input
-          type="text"
-          name="username"
-          value={user.username}
-          onChange={handleChange}
-          style={{ fontSize: "1.5rem" }}
-        />
+        <p style={{ fontSize: "1.5rem" }}>{user.username}</p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", textAlign: "center" }}>
