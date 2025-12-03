@@ -5,7 +5,7 @@ CREATE TABLE users_table (
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(80) NOT NULL,
     biography VARCHAR(180),
-    --creation_date TIMESTAMP DEFAULT NOW(),
+    creation_date TIMESTAMP DEFAULT NOW(),
     profile_pic VARCHAR(250)  -- DEFAULT 'jakis url'
 );
 

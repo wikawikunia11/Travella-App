@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table; // by jawnie nazwać tabelę
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "users_table")
@@ -29,6 +32,10 @@ public class User {
 
     @Column(length = 180)
     private String biography;
+
+    @CreationTimestamp
+    @Column(name = "created_date", updatable = false)
+    private LocalDateTime creationDate;
 
     @Column(name = "profile_pic", length = 250)
     private String profilePic;
@@ -65,6 +72,9 @@ public class User {
 
     public String getBiography() { return biography; }
     public void setBiography(String biography) { this.biography = biography; }
+
+    public LocalDateTime getCreationDate() { return creationDate; }
+    public void setCreationDate(LocalDateTime creationDate) { this.creationDate = creationDate; }
 
     public String getProfilePic() { return profilePic; }
     public void setProfilePic(String profilePic) { this.profilePic = profilePic; }
