@@ -10,11 +10,14 @@ function UserProfile() {
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/users/${id}`)
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to fetch user");
-        return response.json();})
-      .then(data => {setUser(data); setLoading(false);})
-      .catch(err => {setError(err.message); setLoading(false);});
+  .then(async response => {
+    if (!response.ok) throw new Error("Failed to fetch user");
+
+    const text = await response.text(); // najpierw pobierz tekst
+    return text ? JSON.parse(text) : {}; // jeśli pusty tekst, zwróć pusty obiekt
+  })
+  .then(data => { setUser(data); setLoading(false); })
+  .catch(err => { setError(err.message); setLoading(false); });
   }, [id]);
 
   if (loading) return <p>Loading...</p>;
@@ -25,11 +28,11 @@ if (!user) return <p>No user data</p>;
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
   <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
     <img
-      src={user.avatarUrl || defaultAvatar}
+      src={user.profilePic || defaultAvatar}
       alt="profile"
       style={{ width: "80px", height: "80px", borderRadius: "50%" }}
     />
-    <h1 style={{ margin: 0 }}>{user.nickname}</h1>
+    <h1 style={{ margin: 0 }}>{user.username}</h1>
   </div>
 
   <div style={{ textAlign: "center" }}>
