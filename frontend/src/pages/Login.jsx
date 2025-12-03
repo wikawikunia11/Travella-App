@@ -4,9 +4,26 @@ import styles from './Login.module.css';
 import logo from '../assets/logo.png';
 
 function Login() {
-    function search(formData) {
+   const [message, setMessage] = useState('');
+
+    function login(formData) {
         const username = formData.get("username");
         const password = formData.get("password");
+        const data = {username: username, password: password};
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        };
+        fetch('http://localhost:8080/api/login', requestOptions)
+          .then(response => {
+            if (!response.ok) {
+              setMessage("Wrong username or password - try again.")
+              throw new Error(message);
+            }
+            window.location.href = `/profile/${data.username}`;
+            })
+          .catch(error => console.error('', error));
     }
 
     return (
@@ -19,7 +36,7 @@ function Login() {
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Welcome back!</header>
-          <form className={styles.input} action={search}>
+          <form className={styles.input} action={login}>
             <p className={styles.above_input}>Login</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Password</p>
@@ -33,6 +50,11 @@ function Login() {
               <a href="/register" className={styles.register_link}>
               Go to registration
             </a></p>
+          </div>
+          <div className={styles.register}>
+            <p className={styles.register_text} style={{ color: '#d00000ff' }}>
+              {message}
+            </p>
           </div>
         </div>
       </div>

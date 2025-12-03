@@ -66,6 +66,7 @@
     align-items: flex-start;
     padding: 0px;
     align-self: stretch;
+    gap: 20px;
 }
 .text_title {
     font-style: normal;
@@ -81,6 +82,7 @@
 }
 .above_input {
     display: flex;
+    font-size: 12px;
     flex-direction: row;
     align-items: flex-start;
     padding: 0px 8px;
@@ -92,7 +94,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0px;
+    padding: 5px;
     flex: none;
     align-self: stretch;
     flex-grow: 0;
@@ -106,7 +108,7 @@
 .button_box {
     background-color: #e49bff;
     border-radius: 8px;
-    padding: 0px;
+    padding: 5px;
     width: 100%;
     margin: 24px 0;
     justify-content: center;

@@ -1,14 +1,34 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Registration.module.css';
 import logo from '../assets/logo.png';
 
-function Login() {
+function Registration() {
+  const [message, setMessage] = useState('');
     function search(formData) {
-        const username = formData.get("username");
-        const password = formData.get("password");
-        const name = formData.get("name");
-        const surname = formData.get("surname");
+        const userData = {
+          username: formData.get("username"),
+          password: formData.get("password"),
+          name: formData.get("name"),
+          surname: formData.get("surname")
+        };
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        };
+        fetch('http://localhost:8080/api/users', requestOptions)
+          .then(response => {
+            if (!response.ok) {
+              setMessage("Choose another username.")
+              throw new Error(message);
+            }
+            return response.json();
+            })
+          .then(data => {
+            window.location.href = `/profile/${userData.username}`;
+          })
+          .catch(error => console.error('', error));
     }
 
     return (
@@ -39,6 +59,9 @@ function Login() {
               <a href="/login" className={styles.register_link}>
               Log in here
             </a></p>
+            <p className={styles.register_text}>
+              {message}
+            </p>
           </div>
         </div>
       </div>
@@ -46,4 +69,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Registration;
