@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
 function UserEdit() {
-  const { id } = useParams();
+  const { username } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState({
     username: '',
@@ -11,12 +11,13 @@ function UserEdit() {
     biography: '',
     profilePic: ''
   });
+  const [userID, setUserID] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const defaultAvatar = "/vite.svg";
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/users/${id}`)
+    fetch(`http://localhost:8080/api/users/username/${username}`)
       .then(response => {
         if (!response.ok) throw new Error("Failed to fetch user");
         return response.json();
@@ -29,10 +30,11 @@ function UserEdit() {
           biography: data.biography || '',
           profilePic: data.profilePic || ''
         });
+        setUserID(data.id);
         setLoading(false);
       })
       .catch(err => { setError(err.message); setLoading(false); });
-  }, [id]);
+  }, [username]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +42,7 @@ function UserEdit() {
   };
 
   const handleSave = () => {
-    fetch(`http://localhost:8080/api/users/${id}`, {
+    fetch(`http://localhost:8080/api/users/${userID}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user)
@@ -50,7 +52,7 @@ function UserEdit() {
         return response.json();
       })
       .then(() => {
-        navigate(`/profile/${id}`);
+        navigate(`/profile/${username}`);
       })
       .catch(err => setError(err.message));
   };
@@ -60,7 +62,7 @@ function UserEdit() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
-
+      <p>{user.id}</p>
       <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <img
           src={user.profilePic || defaultAvatar}
@@ -108,7 +110,7 @@ function UserEdit() {
       </div>
 
       <div style={{ display: "flex", gap: "5px" }}>
-        <Link to={`/profile/${id}`}><button>Cancel</button></Link>
+        <Link to={`/profile/${username}`}><button>Cancel</button></Link>
         <button onClick={handleSave}>Save</button>
       </div>
     </div>

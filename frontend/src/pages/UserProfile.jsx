@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 function UserProfile() {
-  const { id } = useParams();
+  const { username } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const defaultAvatar = "/vite.svg";
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/users/${id}`)
+    fetch(`http://localhost:8080/api/users/username/${username}`)
   .then(async response => {
     if (!response.ok) throw new Error("Failed to fetch user");
 
@@ -18,7 +18,7 @@ function UserProfile() {
   })
   .then(data => { setUser(data); setLoading(false); })
   .catch(err => { setError(err.message); setLoading(false); });
-  }, [id]);
+  }, [username]);
 
   if (loading) return <p>Loading...</p>;
 if (error) return <p>Error: {error}</p>;
@@ -42,7 +42,7 @@ if (!user) return <p>No user data</p>;
 
   <div style={{ display: "flex", gap: "5px" }}>
     <Link to="/"> <button>Main page</button> </Link>
-    <Link to={`/profile/${id}/edit`}> <button>Edit profile</button> </Link>
+    <Link to={`/profile/${username}/edit`}> <button>Edit profile</button> </Link>
     <button>Posts</button>
   </div>
 </div>

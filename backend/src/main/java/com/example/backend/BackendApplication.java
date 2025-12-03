@@ -120,7 +120,6 @@ public class BackendApplication {
 
         if (passwordMatches) {
             return new ResponseEntity<>(
-                "Logowanie udane.",
                 HttpStatus.OK // 200 OK
             );
         } else {
