@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import MapView from './MapView';
 
 function UserProfile() {
   const { username } = useParams();
@@ -43,7 +44,7 @@ if (!user) return <p>No user data</p>;
   <div style={{ display: "flex", gap: "5px" }}>
     <Link to="/"> <button>Main page</button> </Link>
     <Link to={`/profile/${username}/edit`}> <button>Edit profile</button> </Link>
-    <button>Posts</button>
+    <Link to={`/profile/${username}/posts`}><button>Posts</button> </Link>
   </div>
 </div>
   );
