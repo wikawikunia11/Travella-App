@@ -6,6 +6,7 @@ import L from "leaflet";
 import PostMarker from './PostMarker';
 import json_posts from '../assets/json_posts';
 import MapView from './MapView';
+import styles from './Registration.module.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -47,17 +48,22 @@ function UserPosts() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
-        <h2>The posts of 🦋{username}🦋</h2>
-        <MapView width="800px" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
-        {selectedMarker ? (
-            <div>
-                <h3>{selectedMarker.name}</h3>
-                <p>{selectedMarker.description}</p>
-            </div>
-        ) : (
-            <p>Click on a marker to see details.</p>
-        )}
+    <div style={{width: "100%", height: "100%", borderRadius: "10px", backgroundColor: "#dce7daff" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px"}}>
+            <h2>The posts of 🦋{username}🦋</h2>
+            <MapView width="800px" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
+            {selectedMarker ? (
+                <div>
+                    <h3>{selectedMarker.name}</h3>
+                    <p>{selectedMarker.description}</p>
+                </div>
+            ) : (
+                <p>Click on a marker to see details.</p>
+            )}
+            <Link to={`/addpost/${username}`} style={{width: "100%"}}><button className={styles.button_box} style={{backgroundColor: "#225219ff"}}>
+                <p className={styles.button_text}>Add new post</p>
+            </button></Link>
+        </div>
     </div>
   );
 }

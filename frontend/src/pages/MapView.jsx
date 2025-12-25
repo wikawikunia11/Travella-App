@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
 export default function MapView({ width = "600px", height = "400px", markerData, markerClicked }) {
   // const defaultPosition = [52.2297, 21.0122];
   // const position = markerPosition || defaultPosition;
-  const postList = markerData.map(m => <PostMarker postInfo={m} markerClicked={markerClicked}/>)
+  const postList = markerData.map(m => <PostMarker postInfo={m} markerClicked={markerClicked}/>) || {};
 
   return (
     <div

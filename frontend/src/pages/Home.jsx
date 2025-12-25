@@ -23,7 +23,7 @@ function Home() {
 
       <p>{message || 'Loading message from backend...'}</p>
 
-      <MapView width="800px" height="400px" markerPosition={[50.0647, 19.9450]} />
+      <MapView width="800px" height="400px" />
     </div>
   );
 }
