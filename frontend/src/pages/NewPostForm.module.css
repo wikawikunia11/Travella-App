@@ -73,31 +73,3 @@
     letter-spacing: 0.3px;
     color: #FFFFFF
 }
-.register {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 0px 0px;
-    margin: 0px 0px;
-    font-size: 14px;
-}
-.register_text {
-    font-weight: 500;
-    display: flex;
-    color: #1A1A1A;
-    flex: none;
-    gap: 4px;
-}
-.register_link {
-    color: #d671fb;
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.register_link:hover {
-    color: #cb24f5;
-    text-decoration: underline;
-}
