@@ -6,10 +6,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 
 @Configuration
 public class SecurityConfig {
@@ -29,7 +25,7 @@ public class SecurityConfig {
 
         // for testing enable all access
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(new AntPathRequestMatcher("/**")).permitAll() // PUBLICZNY DOSTĘP
+            .requestMatchers("/**").permitAll() // FOR ALL FOR DEVELOPMENT ONLY
             .anyRequest().authenticated()
         );
 
