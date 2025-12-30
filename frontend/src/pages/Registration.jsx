@@ -30,8 +30,9 @@ function Registration() {
               throw new Error(message);
             }})
           .then(data => {
-            const user = { id: data.id, username: userData.username }; // Simplified based on your code
+            const user = { id: null, username: userData.username };
             login(user);
+            console.log(userData.username)
             navigate(`/profile/${userData.username}`);
           })
           .catch(error => console.error('', error));
