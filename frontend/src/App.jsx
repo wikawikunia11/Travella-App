@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect, useMemo, createContext } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { UserProvider } from './UserContext'; // Import the provider
 import UserProfile from './pages/UserProfile';

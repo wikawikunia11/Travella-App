@@ -9,7 +9,9 @@ function Registration() {
   const navigate = useNavigate();
 
   const [message, setMessage] = useState('');
-    function search(formData) {
+    function register(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
         const userData = {
           username: formData.get("username"),
           password: formData.get("password"),
@@ -26,11 +28,9 @@ function Registration() {
             if (!response.ok) {
               setMessage("Choose another username.")
               throw new Error(message);
-            }
-            return response.json();
-            })
+            }})
           .then(data => {
-            const user = { id: null, username: userData.username }; // Simplified based on your code
+            const user = { id: data.id, username: userData.username }; // Simplified based on your code
             login(user);
             navigate(`/profile/${userData.username}`);
           })
@@ -47,7 +47,7 @@ function Registration() {
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Start your journey with us 🚀</header>
-          <form className={styles.input} onSubmit={search}>
+          <form className={styles.input} onSubmit={register}>
             <p className={styles.above_input}>Name</p>
             <input name="name" className={styles.input_box} placeholder="Your name"/>
             <p className={styles.above_input}>Surname</p>
@@ -55,7 +55,7 @@ function Registration() {
             <p className={styles.above_input}>Create username</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Create password</p>
-            <input name="password" className={styles.input_box} placeholder="Password"/>
+            <input name="password" className={styles.input_box} placeholder="Password" type="password"/>
             <button type="submit" className={styles.button_box}>
               <p className={styles.button_text}>Register</p>
             </button>

@@ -25,11 +25,12 @@ function Login() {
             if (!response.ok) {
               setMessage("Wrong username or password - try again.")
               throw new Error(message);
-            }
+            }})
+          .then(() => {
             const userData = { id: null, username: username }; // Simplified based on your code
             login(userData);
             navigate(`/profile/${data.username}`);
-            })
+          })
           .catch(error => console.error('', error));
     }
 
