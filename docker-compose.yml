@@ -26,7 +26,8 @@ services:
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   db:
@@ -41,5 +42,10 @@ services:
       - ./db:/docker-entrypoint-initdb.d  # pliki init.sql i seed.sql
     ports:
       - "5432:5432"
+    healthcheck:  # check if DB is ready
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 volumes:
   postgres_data:

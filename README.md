@@ -26,6 +26,11 @@ Aplikacja webowa w stylu social media do dzielenia się wrażeniami z podróży
 3. Przycisk do polubienia posta
 4. Dodawanie komentarzy do postów
 
+# Żeby uruchomić bazę danych od nowa (wywołać seed.sql)
+```bash
+docker-compose down -v
+docker-compose up
+```
 
 docker compose up -d --build
 docker compose down

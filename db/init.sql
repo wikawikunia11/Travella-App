@@ -18,6 +18,11 @@ CREATE TABLE friendships (
     FOREIGN KEY (following_id) REFERENCES users_table(id_user)
 );
 
+CREATE TABLE countries (
+    country_id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL UNIQUE
+);
+
 CREATE TABLE posts (
     id_post SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -28,8 +33,8 @@ CREATE TABLE posts (
     post_date TIMESTAMP DEFAULT NOW(),
     country_id INTEGER,
     visit_date DATE,
-    FOREIGN KEY (id_country) REFERENCES countries(id_country),
-    FOREIGN KEY (user_id) REFERENCES users(id_user)
+    FOREIGN KEY (country_id) REFERENCES countries(country_id),
+    FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
 
 CREATE TABLE medias (
@@ -37,11 +42,6 @@ CREATE TABLE medias (
     post_id INTEGER NOT NULL,
     media_file VARCHAR(250) NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts (id_post)
-);
-
-CREATE TABLE countries (
-    id_country SERIAL PRIMARY KEY,
-    name VARCHAR(150) NOT NULL UNIQUE
 );
 
 --addresses????
