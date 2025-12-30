@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Registration.module.css';
 import logo from '../assets/logo.png';
+import { useUser } from '../UserContext';
 
 function Registration() {
+  const { login } = useUser();
+  const navigate = useNavigate();
+
   const [message, setMessage] = useState('');
     function search(formData) {
         const userData = {
@@ -26,7 +30,9 @@ function Registration() {
             return response.json();
             })
           .then(data => {
-            window.location.href = `/profile/${userData.username}`;
+            const user = { id: null, username: userData.username }; // Simplified based on your code
+            login(user);
+            navigate(`/profile/${userData.username}`);
           })
           .catch(error => console.error('', error));
     }
@@ -41,7 +47,7 @@ function Registration() {
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Start your journey with us 🚀</header>
-          <form className={styles.input} action={search}>
+          <form className={styles.input} onSubmit={search}>
             <p className={styles.above_input}>Name</p>
             <input name="name" className={styles.input_box} placeholder="Your name"/>
             <p className={styles.above_input}>Surname</p>
@@ -56,9 +62,8 @@ function Registration() {
           </form>
           <div className={styles.register}>
             <p className={styles.register_text}>Already have an account?
-              <a href="/login" className={styles.register_link}>
-              Log in here
-            </a></p>
+              <Link to="/login" className={styles.register_link}> Log in here </Link>
+            </p>
             <p className={styles.register_text}>
               {message}
             </p>

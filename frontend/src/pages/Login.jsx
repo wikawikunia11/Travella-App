@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext';
 import styles from './Login.module.css';
 import logo from '../assets/logo.png';
 
 function Login() {
    const [message, setMessage] = useState('');
+   const navigate = useNavigate();
+   const { login } = useUser();
 
-    function login(formData) {
+    function handleLogin(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
         const username = formData.get("username");
         const password = formData.get("password");
         const data = {username: username, password: password};
@@ -21,7 +26,9 @@ function Login() {
               setMessage("Wrong username or password - try again.")
               throw new Error(message);
             }
-            window.location.href = `/profile/${data.username}`;
+            const userData = { id: null, username: username }; // Simplified based on your code
+            login(userData);
+            navigate(`/profile/${data.username}`);
             })
           .catch(error => console.error('', error));
     }
@@ -36,7 +43,7 @@ function Login() {
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Welcome back!</header>
-          <form className={styles.input} action={login}>
+          <form className={styles.input} onSubmit={handleLogin}>
             <p className={styles.above_input}>Login</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Password</p>
@@ -47,9 +54,8 @@ function Login() {
           </form>
           <div className={styles.register}>
             <p className={styles.register_text}>Don't have an account?
-              <a href="/register" className={styles.register_link}>
-              Go to registration
-            </a></p>
+              <Link to="/register" className={styles.register_link}> Go to registration </Link>
+            </p>
           </div>
           <div className={styles.register}>
             <p className={styles.register_text} style={{ color: '#d00000ff' }}>
