@@ -1,0 +1,17 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background-color: #eaf3fd;
+    margin: 10px;
+    padding-top: 20px;
+    border-radius: 20px;
+    border: 1px solid #cccccc;
+}
+.img {
+    width: 30%;
+    border-radius: 50%;
+    border: 2px solid #a3a3a3;
+}

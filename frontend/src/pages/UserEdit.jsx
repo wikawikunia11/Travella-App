@@ -60,7 +60,7 @@ function UserEdit() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "20px", padding: "20px", width: '100%' }}>
       <p>{user.id}</p>
       <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <img
@@ -71,13 +71,14 @@ function UserEdit() {
         <p style={{ fontSize: "1.5rem" }}>{user.username}</p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", textAlign: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", textAlign: "center", width: '100%' }}>
         <input
           type="text"
           name="name"
           value={user.name}
           onChange={handleChange}
           placeholder="First name"
+          style={{width: '30%', fontSize: '1rem'}}
         />
         <input
           type="text"
@@ -85,20 +86,22 @@ function UserEdit() {
           value={user.surname}
           onChange={handleChange}
           placeholder="Last name"
+          style={{width: '30%', fontSize: '1rem'}}
         />
         <textarea
           name="biography"
           value={user.biography}
           onChange={handleChange}
           placeholder="Biography"
+          style={{width: '80%', fontSize: '1rem', fontFamily: 'Arial'}}
           rows={4}
         />
-        <input
-          type="text"
+        <textarea
           name="profilePic"
           value={user.profilePic}
           onChange={handleChange}
           placeholder="Profile picture URL"
+          style={{width: '80%', fontSize: '1rem', fontFamily: 'Arial'}}
         />
       </div>
 
