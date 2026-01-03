@@ -10,13 +10,22 @@ CREATE TABLE users_table (
 );
 
 CREATE TABLE friendships (
-    following_id INTEGER NOT NULL,
-    follower_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (follower_id, following_id),
-    FOREIGN KEY (follower_id) REFERENCES users_table(id_user),
-    FOREIGN KEY (following_id) REFERENCES users_table(id_user)
+    first_user_id INTEGER NOT NULL,
+    second_user_id INTEGER NOT NULL,
+    request_time TIMESTAMP DEFAULT NOW(),
+    type_id INTEGER NOT NULL,
+
+    PRIMARY KEY (first_user_id, second_user_id),
+    FOREIGN KEY (first_user_id_id) REFERENCES users_table(id_user),
+    FOREIGN KEY (second_user_id) REFERENCES users_table(id_user),
+
+    CONSTRAINT check_users_order CHECK (first_user_id < second_user_id)
 );
+
+CREATE TABLE frindships_types (
+    id_type SERIAL PRIMARY KEY
+    name VARCHAR(25)
+)
 
 CREATE TABLE countries (
     country_id SERIAL PRIMARY KEY,
