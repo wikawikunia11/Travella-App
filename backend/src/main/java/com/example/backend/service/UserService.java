@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -20,6 +21,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -40,7 +44,12 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
         newUser.setPassword(encodedPassword);
         User savedUser = userRepository.save(newUser);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        String token = jwtService.generateToken(savedUser);
+
+        return new ResponseEntity<>(Map.of(
+            "user", savedUser,
+            "token", token
+        ), HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> deleteUser(String username) {
@@ -56,8 +65,15 @@ public class UserService {
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
     return userRepository.findByUsername(loginRequest.getUsername())
         .filter(user -> passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
-        .map(user -> ResponseEntity.ok("Login successful."))
-        .orElseGet(() -> new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST));
+        .map(user -> {
+                String token = jwtService.generateToken(user);
+                return ResponseEntity.ok(Map.of(
+                    "message", "Login successful",
+                    "token", token
+                ));
+            })
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Invalid username or password.")));
     }
 
     public ResponseEntity<?> updateUser(String username, User updatedUser) {
