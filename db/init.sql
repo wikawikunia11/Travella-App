@@ -10,32 +10,46 @@ CREATE TABLE users_table (
 );
 
 CREATE TABLE friendships (
-    following_id INTEGER NOT NULL,
-    follower_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (follower_id, following_id),
-    FOREIGN KEY (follower_id) REFERENCES users_table(id_user),
-    FOREIGN KEY (following_id) REFERENCES users_table(id_user)
+    first_user_id INTEGER NOT NULL,
+    second_user_id INTEGER NOT NULL,
+    request_time TIMESTAMP DEFAULT NOW(),
+    type_id INTEGER NOT NULL,
+
+    PRIMARY KEY (first_user_id, second_user_id),
+    FOREIGN KEY (first_user_id_id) REFERENCES users_table(id_user),
+    FOREIGN KEY (second_user_id) REFERENCES users_table(id_user),
+
+    CONSTRAINT check_users_order CHECK (first_user_id < second_user_id)
 );
 
-CREATE TABLE countries (
-    country_id SERIAL PRIMARY KEY,
-    name VARCHAR(150) NOT NULL UNIQUE
-);
+CREATE TABLE frindships_types (
+    id_type SERIAL PRIMARY KEY
+    name VARCHAR(25)
+)
 
 CREATE TABLE posts (
     id_post SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     caption VARCHAR(50),
-    description TEXT,
+    description_id INTEGER NOT NULL,
     longitude DECIMAL(9, 6),
     latitude DECIMAL(9, 6),
     post_date TIMESTAMP DEFAULT NOW(),
-    country_id INTEGER,
-    visit_date DATE,
-    FOREIGN KEY (country_id) REFERENCES countries(country_id),
     FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
+
+CREATE TABLE description (
+    id_description SERIAL PRIMARY KEY,
+    -- country_id INTEGER,
+    start_of_visit DATE,
+    end_of_visit DATE
+    -- ........
+)
+
+-- CREATE TABLE countries (
+--     country_id SERIAL PRIMARY KEY,
+--     name VARCHAR(150) NOT NULL UNIQUE
+-- );
 
 CREATE TABLE medias (
     id_media SERIAL PRIMARY KEY,
@@ -43,9 +57,3 @@ CREATE TABLE medias (
     media_file VARCHAR(250) NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts (id_post)
 );
-
---addresses????
-
---likes
-
---comments
