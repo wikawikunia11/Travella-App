@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
+import com.example.backend.model.Friendship;
 import com.example.backend.model.LoginRequest;
 import com.example.backend.model.User;
+import com.example.backend.repository.FriendshipRepository;
 import com.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FriendshipRepository friendshipRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -92,5 +97,20 @@ public class UserService {
                 return new ResponseEntity<>(user, HttpStatus.OK);
             })
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist."));
+    }
+
+    public List<User> findFriendsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User " + username + " does not exist."));
+
+        Long userId = user.getIdUser();
+        List<Friendship> friendships = friendshipRepository
+            .findByFirstUserIdOrSecondUserId(userId, userId);
+
+        List<Long> friendIds = friendships.stream()
+            .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
+            .toList();
+
+        return userRepository.findAllById(friendIds);
     }
 }
