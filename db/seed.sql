@@ -1,7 +1,7 @@
-INSERT INTO friendships_types (name) VALUES ('pending_first_second')
-INSERT INTO friendships_types (name) VALUES ('pending_second_first')
-INSERT INTO friendships_types (name) VALUES ('friends')
-INSERT INTO friendships_types (name) VALUES ('blocked')
+-- INSERT INTO friendships_types (name) VALUES ('pending_first_second')
+-- INSERT INTO friendships_types (name) VALUES ('pending_second_first')
+-- INSERT INTO friendships_types (name) VALUES ('friends')
+-- INSERT INTO friendships_types (name) VALUES ('blocked')
 
 -- encrypted password: pass_1
 INSERT INTO users_table (username, password, name, surname, biography, profile_pic) VALUES
