@@ -16,7 +16,7 @@ CREATE TABLE friendships (
     -- type_id INTEGER NOT NULL,
 
     PRIMARY KEY (first_user_id, second_user_id),
-    FOREIGN KEY (first_user_id_id) REFERENCES users_table(id_user),
+    FOREIGN KEY (first_user_id) REFERENCES users_table(id_user),
     FOREIGN KEY (second_user_id) REFERENCES users_table(id_user),
 
     CONSTRAINT check_users_order CHECK (first_user_id < second_user_id)
@@ -40,9 +40,9 @@ CREATE TABLE posts (
 );
 
 CREATE TABLE description (
-    id_description SERIAL PRIMARY KEY,
+    id_description SERIAL PRIMARY KEY
     -- ........
-)
+);
 
 
 CREATE TABLE medias (
