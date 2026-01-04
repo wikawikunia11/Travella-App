@@ -76,7 +76,11 @@ public class UserService {
                 .body(Map.of("error", "Invalid username or password.")));
     }
 
-    public ResponseEntity<?> updateUser(String username, User updatedUser) {
+    public ResponseEntity<?> updateUser(String username, User updatedUser, String loggedInUsername) {
+        if (!username.equals(loggedInUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("You can only edit your own profile.");
+            }
         return userRepository.findByUsername(username)
         // because we return 2 different types based on situation
             .<ResponseEntity<?>>map(user -> {

@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.Optional;
 import java.util.List;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +60,11 @@ public class UserController {
     }
 
     @PutMapping("/users/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User updatedUser) {
-        return userService.updateUser(username, updatedUser);
+    public ResponseEntity<?> updateUser(
+        @PathVariable String username,
+        @RequestBody User updatedUser,
+        Principal principal // get the currently logged-in user
+    ) {
+        return userService.updateUser(username, updatedUser, principal.getName());
     }
 }
