@@ -25,13 +25,19 @@ function Login() {
             if (!response.ok) {
               setMessage("Wrong username or password - try again.")
               throw new Error(message);
-            }})
-          .then(() => {
-            const userData = { id: null, username: username }; // Simplified based on your code
-            login(userData);
-            navigate(`/profile/${data.username}`);
+            }
+            return response.json();
           })
-          .catch(error => console.error('', error));
+          .then(apiResponse => {
+        const userData = {
+            username: username
+        };
+        const tokenValue = apiResponse.token;
+
+        login(userData, tokenValue);
+        navigate(`/profile/${username}`);
+      })
+      .catch(error => console.error('Login error:', error));
     }
 
     return (

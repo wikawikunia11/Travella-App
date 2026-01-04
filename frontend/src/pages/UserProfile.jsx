@@ -6,31 +6,37 @@ import styles from './UserProfile.module.css';
 function Profile() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user, login, logout } = useUser();
+  const { user, token, login, logout } = useUser();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const defaultAvatar = "/vite.svg";
 
-  useEffect(() => {
-    fetch(`http://localhost:8080/api/users/username/${username}`)
-    .then(async response => {
-      if (!response.ok) throw new Error("Failed to fetch user");
-      const text = await response.text(); // najpierw pobierz tekst
-      return text ? JSON.parse(text) : {}; // jeśli pusty tekst, zwróć pusty obiekt
-    })
-    .then(data => {
-      setProfile(data);
-      setLoading(false);
-      console.log(user);
-      if (user !== null && user.username == username) {
-        const userData = { id: data.id, username: username }; // Simplified based on your code
-        login(userData);
-        console.log(user);
-      }
-    })
-    .catch(err => { setError(err.message); setLoading(false); });
-  }, [username]);
+useEffect(() => {
+  if (!token || token === "null" || !token.includes('.')) {
+    return;
+  }
+
+  fetch(`http://localhost:8080/api/users/${username}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(async response => {
+    if (!response.ok) throw new Error(`Błąd: ${response.status}`);
+    return response.json();
+  })
+  .then(data => {
+    setProfile(data);
+    setLoading(false);
+  })
+  .catch(err => {
+    setError(err.message);
+    setLoading(false);
+  });
+}, [username, token]);
 
   function handleLogout() {
     logout();
