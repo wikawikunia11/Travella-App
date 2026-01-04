@@ -49,6 +49,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/login", "/api/users").permitAll()
+                .requestMatchers("/api/users/*/friends").permitAll()  // do testow
                 .anyRequest().authenticated()
             )
             // can add role-based endpoints ex. .requestMatchers("/api/admin/**").hasRole("ADMIN")

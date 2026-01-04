@@ -67,4 +67,9 @@ public class UserController {
     ) {
         return userService.updateUser(username, updatedUser, principal.getName());
     }
+
+    @GetMapping("/users/{username}/friends")
+    public ResponseEntity<?> getFriendsByUsername(@PathVariable String username) {
+        return userService.getFriendsByUsername(username);
+    }
 }

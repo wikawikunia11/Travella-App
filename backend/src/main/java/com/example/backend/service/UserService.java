@@ -99,18 +99,21 @@ public class UserService {
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist."));
     }
 
-    public List<User> findFriendsByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User " + username + " does not exist."));
+    public ResponseEntity<?> getFriendsByUsername(String username) {
+        return userRepository.findByUsername(username)
+            .<ResponseEntity<?>>map(user -> {
 
-        Long userId = user.getIdUser();
-        List<Friendship> friendships = friendshipRepository
-            .findByFirstUserIdOrSecondUserId(userId, userId);
+                Long userId = user.getIdUser();
+                List<Friendship> friendships = friendshipRepository
+                    .findByFirstUserIdOrSecondUserId(userId, userId);
 
-        List<Long> friendIds = friendships.stream()
-            .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
-            .toList();
+                List<Long> friendIds = friendships.stream()
+                    .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
+                    .toList();
 
-        return userRepository.findAllById(friendIds);
-    }
+                List<User> friends = userRepository.findAllById(friendIds);
+                return ResponseEntity.ok(friends);
+            })
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + username + " does not exist."));
+}
 }
