@@ -29,13 +29,12 @@ function Login() {
             return response.json();
           })
           .then(apiResponse => {
-        const userData = {
-            username: username
-        };
-        const tokenValue = apiResponse.token;
-
-        login(userData, tokenValue);
-        navigate(`/profile/${username}`);
+          const userData = {
+              username: username
+          };
+          const tokenValue = apiResponse.token;
+          login(userData, tokenValue);
+          navigate(`/profile/${username}`);
       })
       .catch(error => console.error('Login error:', error));
     }

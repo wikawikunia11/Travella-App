@@ -9,6 +9,7 @@ import UserPosts from './pages/UserPosts';
 import NewPostForm from './pages/NewPostForm';
 import UserPage from './pages/UserPage';
 import UserProfile from './pages/UserProfile';
+import UserFriends from './pages/UserFriends';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/profile/:username/" element={<UserProfile />} />
             <Route path="/profile/:username/edit" element={<UserEdit />} />
             <Route path="/profile/:username/posts" element={<UserPosts />} />
+            <Route path="/profile/:username/friends" element={<UserFriends />} />
             <Route path="/profile/:username/addpost" element={<NewPostForm />} />
           </Route>
         </Routes>
