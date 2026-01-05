@@ -11,4 +11,7 @@ import com.example.backend.model.FriendshipId;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, FriendshipId>{
     List<Friendship> findByFirstUserIdOrSecondUserId(Long firstUserId, Long secondUserId);
+
+    boolean existsByFirstUserIdAndSecondUserId(Long firstUserId, Long secondUserId);
+    void deleteByFirstUserIdAndSecondUserId(Long firstUserId, Long secondUserId);
 }

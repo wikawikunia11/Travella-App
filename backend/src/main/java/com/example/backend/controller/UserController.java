@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
+import com.example.backend.service.FriendshipService;
 import com.example.backend.model.LoginRequest;
 
 @RestController
@@ -28,7 +29,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-   @GetMapping("/message")
+    @Autowired
+    private FriendshipService friendshipService;
+
+    @GetMapping("/message")
     public String getMessage() {
         return "Hello from the backend! balbinka wita";
     }
@@ -70,6 +74,16 @@ public class UserController {
 
     @GetMapping("/users/{username}/friends")
     public ResponseEntity<?> getFriendsByUsername(@PathVariable String username) {
-        return userService.getFriendsByUsername(username);
+        return friendshipService.getFriendsByUsername(username);
     }
+
+    @PostMapping("/users/{friendUsername}/friends")
+    public ResponseEntity<?> addFriend(@PathVariable String friendUsername, Principal principal) {
+        return friendshipService.addFriend(principal.getName(), friendUsername);
+    }
+
+    @DeleteMapping("/users/{friendUsername}/friends")
+    public ResponseEntity<?> removeFriend(@PathVariable String friendUsername, Principal principal) {
+        return friendshipService.removeFriend(principal.getName(), friendUsername);
+}
 }
