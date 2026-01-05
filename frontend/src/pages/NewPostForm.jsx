@@ -7,14 +7,22 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useUser } from '../UserContext';
 
+function normalizeLng(lng) {
+  return ((lng + 180) % 360 + 360) % 360 - 180;
+}
+
 function LocationMarker({setPosition, localize }) {
   const map = useMapEvents({
     click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng])
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      setPosition([lat, lng]);
     },
     locationfound(e) {
-      setPosition([e.latlng.lat, e.latlng.lng])
-      map.flyTo(e.latlng, map.getZoom())
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      setPosition([lat, lng]);
+      map.flyTo([lat, lng], map.getZoom())
     }
   })
 
@@ -51,7 +59,7 @@ export default function NewPostForm() {
     const formData = new FormData(e.target);
 
     formData.append("latitude", position[0]);
-    formData.append("longitude", position[1]);
+    formData.append("longitude", normalizeLng(position[1]));
 
     formData.append("visitDate", date.toISOString().split('T')[0]);
 
@@ -68,7 +76,7 @@ export default function NewPostForm() {
     .then(res => {
       if (res.ok) {
         alert("Post added successfully!");
-        navigate(`/profile/${username}`);
+        navigate(`/profile/${username}/posts`);
       } else {
         alert("An error occurred while adding the post.");
       }
