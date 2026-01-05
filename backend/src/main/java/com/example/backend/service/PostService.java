@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.PostDTO;
 import com.example.backend.model.PostImage;
+import com.example.backend.model.PostImageDTO;
 import com.example.backend.model.User;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
@@ -29,11 +31,31 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<PostDTO> getAllPostsDTO() {
+        return postRepository.findAll().stream().map(post -> {
+            List<PostImageDTO> images = post.getImages().stream()
+                .map(img -> new PostImageDTO(
+                    img.getId(),
+                    img.getFileName(),
+                    img.getFilePath(),
+                    img.getContentType(),
+                    img.getFileSize()
+                ))
+                .toList();
+
+            return new PostDTO(
+                post.getIdPost(),
+                post.getCaption(),
+                post.getDescription(),
+                post.getLatitude(),
+                post.getLongitude(),
+                post.getVisitDate().toString(),
+                images
+            );
+        }).toList();
     }
 
-    @Transactional // all commit or rollback all
+    @Transactional
     public Post createPost(
         String caption,
         String description,
@@ -42,7 +64,7 @@ public class PostService {
         LocalDate visitDate,
         List<MultipartFile> images,
         String username
-    ) throws IOException{
+    ) throws IOException {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -55,26 +77,31 @@ public class PostService {
         post.setLongitude(longitude);
         post.setVisitDate(visitDate);
 
-        // if (images != null && !images.isEmpty()) {
-        //     for (MultipartFile file : images) {
-        //         String uploadsDir = "uploads/";
-        //         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        //         Path filePath = Paths.get(uploadsDir + fileName);
-        //         Files.createDirectories(filePath.getParent());
-        //         file.transferTo(filePath);
+        post = postRepository.save(post);
 
-        //         PostImage postImage = new PostImage();
-        //         postImage.setFileName(file.getOriginalFilename());
-        //         postImage.setFilePath(fileName);
-        //         postImage.setContentType(file.getContentType());
-        //         postImage.setFileSize(file.getSize());
-        //         postImage.setPost(post);
+        if (images != null && !images.isEmpty()) {
+            String uploadsDir = "uploads/posts/" + post.getIdPost() + "/";
+            Files.createDirectories(Paths.get(uploadsDir));
 
-        //         post.getImages().add(postImage);
-        //     }
-        // }
+            for (MultipartFile file : images) {
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                Path filePath = Paths.get(uploadsDir, fileName);
+                file.transferTo(filePath.toFile());
 
-        return postRepository.save(post);
+                PostImage postImage = new PostImage();
+                postImage.setFileName(file.getOriginalFilename());
+                postImage.setFilePath("posts/" + post.getIdPost() + "/" + fileName);
+                postImage.setContentType(file.getContentType());
+                postImage.setFileSize(file.getSize());
+                postImage.setPost(post);
+
+                post.getImages().add(postImage);
+            }
+
+            post = postRepository.save(post);
+        }
+
+        return post;
     }
 
     @Transactional
@@ -91,12 +118,32 @@ public class PostService {
             });
     }
 
-    public List<Post> getPostsByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    public List<PostDTO> getPostsByUsernameDTO(String username) {
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return postRepository.findByUser(user);
-    }
+    return postRepository.findByUser(user).stream().map(post -> {
+        List<PostImageDTO> images = post.getImages().stream()
+            .map(img -> new PostImageDTO(
+           img.getId(),
+           img.getFileName(),
+           img.getFilePath(),
+           img.getContentType(),
+           img.getFileSize()
+        )).toList();
+
+        return new PostDTO(
+            post.getIdPost(),
+            post.getCaption(),
+            post.getDescription(),
+            post.getLatitude(),
+            post.getLongitude(),
+            post.getVisitDate().toString(),
+            images
+        );
+    }).toList();
+}
+
 
 
 }

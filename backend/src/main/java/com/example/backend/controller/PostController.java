@@ -27,11 +27,9 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/all")
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public List<PostDTO> getAllPosts() {
+        return postService.getAllPostsDTO();
     }
-
-
 
     @PostMapping("/all")
     public ResponseEntity<Post> addPost(
@@ -66,10 +64,9 @@ public class PostController {
     }
 
     @GetMapping("/user/{username}")
-    public ResponseEntity<List<Post>> getUserPosts(@PathVariable String username) {
+    public ResponseEntity<List<PostDTO>> getUserPosts(@PathVariable String username) {
         try {
-            List<Post> posts = postService.getPostsByUsername(username);
-            // map postDTO
+            List<PostDTO> posts = postService.getPostsByUsernameDTO(username);
             return ResponseEntity.ok(posts);
         } catch (RuntimeException e) {
              return new ResponseEntity<>(HttpStatus.NOT_FOUND);
