@@ -30,22 +30,37 @@ export default function NewPostForm() {
   const [date, setDate] = useState(new Date());
   const [position, setPosition] = useState(null);
   const [localize, setLocalize] = useState(false);
+  const [previews, setPreviews] = useState([]);
+
+  function handleImages(e) {
+    const files = Array.from(e.target.files);
+    setPreviews(files.map(file => URL.createObjectURL(file)));
+  }
 
   function addPost(e) {
     e.preventDefault();
+
+    if (!position) {
+      alert("Select location first");
+      return;
+    }
+
     const formData = new FormData(e.target);
 
-    var postInfo = {};
-    formData.forEach(function(value, key){
-        postInfo[key] = value;
-    });
-    postInfo["longitude"] = position[0];
-    postInfo["latitude"] = position[1];
-    postInfo["visit_date"] = date;
-    var json = JSON.stringify(postInfo);
+    formData.append("longitude", position[0]);
+    formData.append("latitude", position[1]);
+    formData.append("visit_date", date.toISOString());
 
-    console.log(json);
-    }
+    fetch("http://localhost:8080/posts/all", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Post created", data);
+    })
+    .catch(err => console.error(err));
+  }
 
   return (
     <div className={styles.root}>
@@ -66,6 +81,19 @@ export default function NewPostForm() {
             checked={localize}
             onChange={(e) => setLocalize(e.target.checked)} />
           </label>
+          <p className={styles.above_input}>Photos</p>
+          <input
+            type="file"
+            name="images"
+            accept="image/*"
+            multiple
+            className={styles.input_box}
+            onChange={handleImages}
+          />
+          <div className={styles.preview}>
+            {previews.map((src, i) => (
+            <img key={i} src={src} width="100" />))}
+          </div>
           <button type="submit" className={styles.button_box}>
             <p className={styles.button_text}>Add post</p>
           </button>
