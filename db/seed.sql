@@ -12,3 +12,12 @@ INSERT INTO users_table (username, password, name, surname, biography, profile_p
 -- encrypted password: papa
 INSERT INTO users_table (username, password, name, surname, biography, profile_pic) VALUES
     ('pedropascal', '$2a$10$ksjaUHRGNpJV5ilQWLNc1unJ7VE.p3GTCGwq8nTq8Ws5bWfiSuViC', 'Pedro', 'Pascal', NULL, 'https://pliki.well.pl/i/06/33/88/063388_r0_940.jpg');
+
+
+INSERT INTO friendships (first_user_id, second_user_id) VALUES (
+    (SELECT id_user FROM users_table WHERE username = 'julciazugaj'),
+    (SELECT id_user FROM users_table WHERE username = 'pedropascal'));
+
+INSERT INTO friendships (first_user_id, second_user_id) VALUES (
+    (SELECT id_user FROM users_table WHERE username = 'testusr'),
+    (SELECT id_user FROM users_table WHERE username = 'pedropascal'));
