@@ -39,6 +39,7 @@ export default function NewPostForm() {
     const files = Array.from(e.target.files);
     setPreviews(files.map(file => URL.createObjectURL(file)));
   }
+
   function addPost(e) {
     e.preventDefault();
 
@@ -48,48 +49,38 @@ export default function NewPostForm() {
     }
 
     const formData = new FormData(e.target);
+    formData.append("longitude", position[0]);
+    formData.append("latitude", position[1]);
+    formData.append("visitDate", date.toISOString());
+
     const postInfo = Object.fromEntries(formData);
 
-    const payload = {
-    caption: postInfo.caption,
-    description: postInfo.description,
-    longitude: position[1],
-    latitude: position[0],
-    visitDate: date.toISOString().split('T')[0] // YYYY-MM-DD
-    };
+
+    // const payload = {
+    // caption: postInfo.caption,
+    // description: postInfo.description,
+    // longitude: position[1],
+    // latitude: position[0],
+    // visitDate: date.toISOString().split('T')[0] // YYYY-MM-DD
+    // };
 
     fetch('http://localhost:8080/api/posts/all', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(payload)
-    })
-    .then(response => {
-      if (response.ok) {
-        alert("Post added successfully!");
-        navigate(`/profile/${username}`);
-      } else {
-        alert("An error occurred while adding the post.");
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
-    formData.append("longitude", position[0]);
-    formData.append("latitude", position[1]);
-    formData.append("visit_date", date.toISOString());
-
-    fetch("http://localhost:8080/posts/all", {
-      method: "POST",
       body: formData
     })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Post created", data);
-    })
-    .catch(err => console.error(err));
+    .then(res => {
+    if (res.ok) {
+      alert("Post added successfully!");
+      navigate(`/profile/${username}`);
+    } else {
+      alert("An error occurred while adding the post.");
+    }
+  })
+  .catch(err => console.error(err));
+  }
 
   return (
     <div className={styles.root}>
