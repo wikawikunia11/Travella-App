@@ -28,14 +28,18 @@ function Registration() {
             if (!response.ok) {
               setMessage("Choose another username.")
               throw new Error(message);
-            }})
-          .then(data => {
-            const user = { id: null, username: userData.username };
-            login(user);
-            console.log(userData.username)
-            navigate(`/profile/${userData.username}`);
+            }
+            return response.json();
           })
-          .catch(error => console.error('', error));
+          .then(data => {
+              localStorage.setItem('token', data.token);
+              login(data.user, data.token);
+              navigate(`/profile/${data.user.username}`);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              setMessage("Choose another username or check connection.");
+            });
     }
 
     return (

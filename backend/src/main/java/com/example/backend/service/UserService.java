@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
+import com.example.backend.model.Friendship;
 import com.example.backend.model.LoginRequest;
 import com.example.backend.model.User;
+import com.example.backend.repository.FriendshipRepository;
 import com.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -19,7 +22,13 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private FriendshipRepository friendshipRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -40,7 +49,12 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
         newUser.setPassword(encodedPassword);
         User savedUser = userRepository.save(newUser);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        String token = jwtService.generateToken(savedUser);
+
+        return new ResponseEntity<>(Map.of(
+            "user", savedUser,
+            "token", token
+        ), HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> deleteUser(String username) {
@@ -56,11 +70,22 @@ public class UserService {
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
     return userRepository.findByUsername(loginRequest.getUsername())
         .filter(user -> passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
-        .map(user -> ResponseEntity.ok("Login successful."))
-        .orElseGet(() -> new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST));
+        .map(user -> {
+                String token = jwtService.generateToken(user);
+                return ResponseEntity.ok(Map.of(
+                    "message", "Login successful",
+                    "token", token
+                ));
+            })
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Invalid username or password.")));
     }
 
-    public ResponseEntity<?> updateUser(String username, User updatedUser) {
+    public ResponseEntity<?> updateUser(String username, User updatedUser, String loggedInUsername) {
+        if (!username.equals(loggedInUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("You can only edit your own profile.");
+            }
         return userRepository.findByUsername(username)
         // because we return 2 different types based on situation
             .<ResponseEntity<?>>map(user -> {
@@ -73,4 +98,22 @@ public class UserService {
             })
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist."));
     }
+
+    public ResponseEntity<?> getFriendsByUsername(String username) {
+        return userRepository.findByUsername(username)
+            .<ResponseEntity<?>>map(user -> {
+
+                Long userId = user.getIdUser();
+                List<Friendship> friendships = friendshipRepository
+                    .findByFirstUserIdOrSecondUserId(userId, userId);
+
+                List<Long> friendIds = friendships.stream()
+                    .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
+                    .toList();
+
+                List<User> friends = userRepository.findAllById(friendIds);
+                return ResponseEntity.ok(friends);
+            })
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + username + " does not exist."));
+}
 }

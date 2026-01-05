@@ -35,7 +35,7 @@ function UserPosts() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{width: "100%", height: "100%", borderRadius: "10px", backgroundColor: "#dce7daff" }}>
+    <div style={{width: "100rem", height: "100rem", borderRadius: "10px", backgroundColor: "#dce7daff" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px"}}>
             <h2>The posts of 🦋{username}🦋</h2>
             <MapView width="800px" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
@@ -47,7 +47,7 @@ function UserPosts() {
             ) : (
                 <p>Click on a marker to see details.</p>
             )}
-            <Link to={`/addpost/${username}`} style={{width: "100%"}}><button className={styles.button_box} style={{backgroundColor: "#225219ff"}}>
+            <Link to={`/profile/${username}/addpost`} style={{width: "100%"}}><button className={styles.button_box} style={{backgroundColor: "#225219ff"}}>
                 <p className={styles.button_text}>Add new post</p>
             </button></Link>
         </div>

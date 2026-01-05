@@ -2,11 +2,13 @@ package com.example.backend.controller;
 
 import java.util.Optional;
 import java.util.List;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,7 @@ import com.example.backend.model.LoginRequest;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = {"http://localhost:5173"})
 public class UserController {
 
     @Autowired
@@ -57,7 +60,16 @@ public class UserController {
     }
 
     @PutMapping("/users/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User updatedUser) {
-        return userService.updateUser(username, updatedUser);
+    public ResponseEntity<?> updateUser(
+        @PathVariable String username,
+        @RequestBody User updatedUser,
+        Principal principal // get the currently logged-in user
+    ) {
+        return userService.updateUser(username, updatedUser, principal.getName());
+    }
+
+    @GetMapping("/users/{username}/friends")
+    public ResponseEntity<?> getFriendsByUsername(@PathVariable String username) {
+        return userService.getFriendsByUsername(username);
     }
 }

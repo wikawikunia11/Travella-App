@@ -1,21 +1,22 @@
 .root {
     display: flex;
     flex-direction: row;
+    width: 100rem;
 }
 
 .left_panel {
     flex: 1;
     display: flex;
-    width: 50vw;
-    height: 100vh;
+    height: 100rem;
     flex-direction: column;
     padding: 30px;
     margin: 10px;
+    align-items: center;
 }
 .map_view {
     flex: 1;
-    width: 45vw;
-    height: 80vh;
+    width: 50rem;
+    height: 80rem;
 }
 .username {
     color: rgb(1, 101, 27);
@@ -54,6 +55,12 @@
     background-color: #aedbff;
     font-size: 16px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.checkbox {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    justify-content: center;
 }
 .button_box {
     background-color: rgb(1, 101, 27);
