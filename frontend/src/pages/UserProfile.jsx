@@ -14,6 +14,7 @@ function Profile() {
 
 useEffect(() => {
   if (!token || token === "null" || !token.includes('.')) {
+    console.log(token);
     return;
   }
 
@@ -38,11 +39,6 @@ useEffect(() => {
   });
 }, [username, token]);
 
-  function handleLogout() {
-    logout();
-    navigate('/login');
-  }
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!profile) return <p>No user data</p>;
@@ -54,10 +50,14 @@ useEffect(() => {
           alt="profile"
           className={styles.img}
         />
-        <h1>{profile.name} {profile.surname}</h1>
-        <h2>{profile.username}</h2>
-        <h2>Friends: 10</h2>
-        <h4>{profile.biography}</h4>
+        <h1 className={styles.name}>
+          {profile.name} {profile.surname}
+        </h1>
+
+        <p className={styles.username}>
+          @{profile.username}
+        </p>
+      {profile.biography && <p className={styles.stats}>{profile.biography}</p>}
     </div>
   );
 }
