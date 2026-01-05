@@ -31,9 +31,9 @@ CREATE TABLE posts (
     longitude DECIMAL(9, 6),
     latitude DECIMAL(9, 6),
     post_date TIMESTAMP DEFAULT NOW(),
-    country_id INTEGER,
+    --country_id INTEGER,
     visit_date DATE,
-    FOREIGN KEY (country_id) REFERENCES countries(country_id),
+    --FOREIGN KEY (country_id) REFERENCES countries(country_id),
     FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
 
