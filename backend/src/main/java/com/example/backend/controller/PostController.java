@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.PostImage;
 import com.example.backend.service.PostService;
+
+import java.nio.file.Files;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +34,33 @@ import java.util.stream.Collectors;
 public class PostController {
     @Autowired
     private PostService postService;
+
+    @GetMapping("/{postId}/images")
+    public ResponseEntity<List<String>> getPostImages(@PathVariable Long postId) {
+        try {
+            List<String> images = postService.getPostImages(postId);
+            return ResponseEntity.ok(images);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/{postId}/images/{filename}")
+    public ResponseEntity<Resource> getImageFile(@PathVariable Long postId, @PathVariable String filename
+    ) throws IOException {
+        try {
+            Resource resource = postService.getImageFile(postId, filename);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(resource.getFile().toPath()))
+                    .body(resource);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
     @GetMapping("/all")
     public List<Post> getAllPosts() {

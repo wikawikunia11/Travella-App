@@ -25,6 +25,5 @@ public class PostImage {
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
-    @JsonBackReference
     private Post post;
 }

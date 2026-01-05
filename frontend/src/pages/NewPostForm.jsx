@@ -39,13 +39,18 @@ export default function NewPostForm() {
   const [date, setDate] = useState(new Date());
   const [position, setPosition] = useState(null);
   const [localize, setLocalize] = useState(false);
-  const { token } = useUser(); // token from context
+  const { token } = useUser();
   const navigate = useNavigate();
   const [previews, setPreviews] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   function handleImages(e) {
     const files = Array.from(e.target.files);
-    setPreviews(files.map(file => URL.createObjectURL(file)));
+    const newFiles = files.filter(file => !selectedFiles.some(f => f.name === file.name));
+    setSelectedFiles(prev => [...prev, ...newFiles]);
+
+    setPreviews(prev => [...prev, ...newFiles.map(file => URL.createObjectURL(file))]);
+    e.target.value = null;
   }
 
   function addPost(e) {
@@ -56,17 +61,16 @@ export default function NewPostForm() {
       return;
     }
 
-    const formData = new FormData(e.target);
+    const formData = new FormData();
 
+    formData.append("caption", e.target.caption.value);
+    formData.append("description", e.target.description.value);
     formData.append("latitude", position[0]);
     formData.append("longitude", normalizeLng(position[1]));
-
     formData.append("visitDate", date.toISOString().split('T')[0]);
-
-    const files = e.target.images.files;
-    for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
-    }
+    selectedFiles.forEach(file => formData.append("images", file));
+    setSelectedFiles([]);
+    setPreviews([]);
 
     fetch('http://localhost:8080/api/posts/all', {
       method: 'POST',

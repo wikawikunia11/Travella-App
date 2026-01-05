@@ -45,10 +45,6 @@ public class Post {
     @Column(name = "visit_date")
     private LocalDate visitDate;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonManagedReference
-    private List<PostImage> images = new ArrayList<>();
-
     // country id to be added later
 
     @Column(name = "post_date", updatable = false)
