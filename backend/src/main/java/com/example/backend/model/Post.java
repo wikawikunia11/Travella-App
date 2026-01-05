@@ -1,6 +1,9 @@
 package com.example.backend.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,8 +15,9 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-
+import jakarta.persistence.CascadeType;
 
 @Data
 @AllArgsConstructor
@@ -37,6 +41,9 @@ public class Post {
 
     @Column(name = "visit_date")
     private LocalDate visitDate;
+
+    //@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    //private List<PostImage> images = new ArrayList<>();
 
     // country id to be added later
 

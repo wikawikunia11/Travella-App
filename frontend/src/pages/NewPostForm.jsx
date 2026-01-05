@@ -49,37 +49,31 @@ export default function NewPostForm() {
     }
 
     const formData = new FormData(e.target);
-    formData.append("longitude", position[0]);
-    formData.append("latitude", position[1]);
-    formData.append("visitDate", date.toISOString());
 
-    const postInfo = Object.fromEntries(formData);
+    formData.append("latitude", position[0]);
+    formData.append("longitude", position[1]);
 
+    formData.append("visitDate", date.toISOString().split('T')[0]);
 
-    // const payload = {
-    // caption: postInfo.caption,
-    // description: postInfo.description,
-    // longitude: position[1],
-    // latitude: position[0],
-    // visitDate: date.toISOString().split('T')[0] // YYYY-MM-DD
-    // };
+    const files = e.target.images.files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+    }
 
     fetch('http://localhost:8080/api/posts/all', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
       body: formData
     })
     .then(res => {
-    if (res.ok) {
-      alert("Post added successfully!");
-      navigate(`/profile/${username}`);
-    } else {
-      alert("An error occurred while adding the post.");
-    }
-  })
-  .catch(err => console.error(err));
+      if (res.ok) {
+        alert("Post added successfully!");
+        navigate(`/profile/${username}`);
+      } else {
+        alert("An error occurred while adding the post.");
+      }
+    })
+    .catch(err => console.error(err));
   }
 
   return (
