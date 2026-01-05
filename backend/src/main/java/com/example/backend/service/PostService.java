@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.backend.model.Post;
-import com.example.backend.model.PostDTO;
 import com.example.backend.model.PostImage;
-import com.example.backend.model.PostImageDTO;
 import com.example.backend.model.User;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
@@ -31,28 +29,8 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<PostDTO> getAllPostsDTO() {
-        return postRepository.findAll().stream().map(post -> {
-            List<PostImageDTO> images = post.getImages().stream()
-                .map(img -> new PostImageDTO(
-                    img.getId(),
-                    img.getFileName(),
-                    img.getFilePath(),
-                    img.getContentType(),
-                    img.getFileSize()
-                ))
-                .toList();
-
-            return new PostDTO(
-                post.getIdPost(),
-                post.getCaption(),
-                post.getDescription(),
-                post.getLatitude(),
-                post.getLongitude(),
-                post.getVisitDate().toString(),
-                images
-            );
-        }).toList();
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
     }
 
     @Transactional
@@ -80,12 +58,13 @@ public class PostService {
         post = postRepository.save(post);
 
         if (images != null && !images.isEmpty()) {
-            String uploadsDir = "uploads/posts/" + post.getIdPost() + "/";
-            Files.createDirectories(Paths.get(uploadsDir));
+            String baseUploadDir = "/app/uploads/posts/";
+            Path postDir = Paths.get(baseUploadDir, String.valueOf(post.getIdPost()));
+            Files.createDirectories(postDir);
 
             for (MultipartFile file : images) {
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Path filePath = Paths.get(uploadsDir, fileName);
+                Path filePath = postDir.resolve(fileName);
                 file.transferTo(filePath.toFile());
 
                 PostImage postImage = new PostImage();
@@ -118,32 +97,9 @@ public class PostService {
             });
     }
 
-    public List<PostDTO> getPostsByUsernameDTO(String username) {
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
-    return postRepository.findByUser(user).stream().map(post -> {
-        List<PostImageDTO> images = post.getImages().stream()
-            .map(img -> new PostImageDTO(
-           img.getId(),
-           img.getFileName(),
-           img.getFilePath(),
-           img.getContentType(),
-           img.getFileSize()
-        )).toList();
-
-        return new PostDTO(
-            post.getIdPost(),
-            post.getCaption(),
-            post.getDescription(),
-            post.getLatitude(),
-            post.getLongitude(),
-            post.getVisitDate().toString(),
-            images
-        );
-    }).toList();
-}
-
-
-
+    public List<Post> getPostsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return postRepository.findByUser(user);
+    }
 }

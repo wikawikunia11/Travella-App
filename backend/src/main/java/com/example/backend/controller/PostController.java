@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.model.Post;
-import com.example.backend.model.PostDTO;
 import com.example.backend.service.PostService;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -27,8 +26,8 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/all")
-    public List<PostDTO> getAllPosts() {
-        return postService.getAllPostsDTO();
+    public List<Post> getAllPosts() {
+        return postService.getAllPosts();
     }
 
     @PostMapping("/all")
@@ -64,9 +63,9 @@ public class PostController {
     }
 
     @GetMapping("/user/{username}")
-    public ResponseEntity<List<PostDTO>> getUserPosts(@PathVariable String username) {
+    public ResponseEntity<List<Post>> getUserPosts(@PathVariable String username) {
         try {
-            List<PostDTO> posts = postService.getPostsByUsernameDTO(username);
+            List<Post> posts = postService.getPostsByUsername(username);
             return ResponseEntity.ok(posts);
         } catch (RuntimeException e) {
              return new ResponseEntity<>(HttpStatus.NOT_FOUND);
