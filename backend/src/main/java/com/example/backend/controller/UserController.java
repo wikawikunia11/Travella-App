@@ -77,13 +77,13 @@ public class UserController {
         return friendshipService.getFriendsByUsername(username);
     }
 
-    @PostMapping("/users/{username}/friends")
-    public ResponseEntity<?> addFriend(@PathVariable String username, Principal principal) {
-        return friendshipService.addFriend(principal.getName(), username);
+    @PostMapping("/users/{friendUsername}/friends")
+    public ResponseEntity<?> addFriend(@PathVariable String friendUsername, Principal principal) {
+        return friendshipService.addFriend(principal.getName(), friendUsername);
     }
 
-    @DeleteMapping("/users/{username}/friends")
-    public ResponseEntity<?> removeFriend(@PathVariable String username, Principal principal) {
-        return friendshipService.removeFriend(principal.getName(), username);
+    @DeleteMapping("/users/{friendUsername}/friends")
+    public ResponseEntity<?> removeFriend(@PathVariable String friendUsername, Principal principal) {
+        return friendshipService.removeFriend(principal.getName(), friendUsername);
 }
 }
