@@ -1,10 +1,11 @@
 import React, {useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import styles from './NewPostForm.module.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useUser } from '../UserContext';
 
 function LocationMarker({setPosition, localize }) {
   const map = useMapEvents({
@@ -30,13 +31,14 @@ export default function NewPostForm() {
   const [date, setDate] = useState(new Date());
   const [position, setPosition] = useState(null);
   const [localize, setLocalize] = useState(false);
+  const { token } = useUser(); // token from context
+  const navigate = useNavigate();
   const [previews, setPreviews] = useState([]);
 
   function handleImages(e) {
     const files = Array.from(e.target.files);
     setPreviews(files.map(file => URL.createObjectURL(file)));
   }
-
   function addPost(e) {
     e.preventDefault();
 
@@ -46,6 +48,34 @@ export default function NewPostForm() {
     }
 
     const formData = new FormData(e.target);
+    const postInfo = Object.fromEntries(formData);
+
+    const payload = {
+    caption: postInfo.caption,
+    description: postInfo.description,
+    longitude: position[1],
+    latitude: position[0],
+    visitDate: date.toISOString().split('T')[0] // YYYY-MM-DD
+    };
+
+    fetch('http://localhost:8080/api/posts/all', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => {
+      if (response.ok) {
+        alert("Post added successfully!");
+        navigate(`/profile/${username}`);
+      } else {
+        alert("An error occurred while adding the post.");
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
 
     formData.append("longitude", position[0]);
     formData.append("latitude", position[1]);
@@ -60,7 +90,6 @@ export default function NewPostForm() {
       console.log("Post created", data);
     })
     .catch(err => console.error(err));
-  }
 
   return (
     <div className={styles.root}>
