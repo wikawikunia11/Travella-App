@@ -96,4 +96,16 @@ public class UserService {
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist."));
     }
 
+    public ResponseEntity<?> searchUsers(String query) {
+        if (query == null || query.isEmpty()) {
+        return ResponseEntity.ok(List.of());
+    }
+
+    List<User> foundUsers = userRepository.findByUsernameContainingIgnoreCase(query);
+
+    List<User> limitedResults = foundUsers.stream().limit(10).toList();  // max 10
+
+    return ResponseEntity.ok(limitedResults);
+}
+
 }
