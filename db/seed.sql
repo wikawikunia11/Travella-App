@@ -49,3 +49,21 @@ INSERT INTO posts (user_id, caption, visit_date, longitude, latitude, descriptio
         50.064651,
         'Obóz był niesamowity, tęsknię za Wami!'
     );
+
+INSERT INTO medias (post_id, media_file) VALUES
+    (
+        1,
+        '3b18cc55-f26e-40bd-a5ee-de25d9021cb9_photomode_27112025_222714.png'
+    );
+
+INSERT INTO medias (post_id, media_file) VALUES
+    (
+        1,
+        'ed2be4f9-ce45-4769-8617-edd956d9970d_photomode_11122025_202219.png'
+    );
+
+INSERT INTO medias (post_id, media_file) VALUES
+    (
+        2,
+        'd03ae560-578e-46db-a09c-17adf8bcd639_photomode_11122025_194625.png'
+    );
