@@ -31,60 +31,38 @@ function UserPosts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchFriends = async () => {
-    try {
-      const res = await fetch(
-        `http://localhost:8080/api/users/${username}/friends`,
-        {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-
-      if (!res.ok) return [];
-
-      const data = await res.json();
-
-      if (typeof data === "string") {
-        console.error("Friends error:", data);
-        return [];
-      }
-
-      return data.map((u) => u.username);
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
-  };
-
   useEffect(() => {
-    const fetchAllPosts = async () => {
-      try {
-        setLoading(true);
+    if (!token || token === "null" || !token.includes('.')) {
+      console.log(token);
+      return;
+    }
 
-        const friends = await fetchFriends();
-        const users = [username, ...friends];
+    setLoading(true);
 
-        const results = await Promise.all(
-          users.map((u) =>
-            fetch(`http://localhost:8080/api/posts/user/${u}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }).then((r) => (r.ok ? r.json() : []))
-          )
-        );
+    const userPosts = fetch(`http://localhost:8080/api/posts/user/${username}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(res => res.ok ? res.json() : []);
 
-          const mergedPosts = results.flat();
+    const friendsPosts = (username === user.username)
+      ? fetch(`http://localhost:8080/api/users/${username}/friends-posts`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then(res => res.ok ? res.json() : [])
+      : Promise.resolve([]);
 
-          setPosts(mergedPosts);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load posts");
-      } finally {
+    Promise.all([userPosts, friendsPosts])
+      .then(([userPostsData, friendsPostsData]) => {
+        setPosts([...userPostsData, ...friendsPostsData]);
+      })
+      .catch(err => {
+        console.log(err);
+        setError(err);
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    };
+      });
 
-    fetchAllPosts();
-  }, [username, token]);
+  }, [username, token, user.username]);
+  
 
   const fetchImageWithToken = async (url) => {
     const res = await fetch(url, {

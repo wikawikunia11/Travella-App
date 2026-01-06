@@ -9,5 +9,6 @@ import com.example.backend.model.User;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUser(User user);
+    List<Post> findByUserIn(List<User> userList);
     void deleteByIdPost(Long idPost);
 }

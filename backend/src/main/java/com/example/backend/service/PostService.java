@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,9 @@ public class PostService {
 
     @Autowired
     private PostImageRepository postImageRepository;
+
+    @Autowired
+    private FriendshipService friendshipService;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
@@ -154,5 +158,18 @@ public class PostService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return postRepository.findByUser(user);
+    }
+
+    public ResponseEntity<?> getFriendsPosts(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        List<User> friends = friendshipService.getFriendsList(user);
+
+        if (friends.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        return ResponseEntity.ok(postRepository.findByUserIn(friends));
     }
 }
