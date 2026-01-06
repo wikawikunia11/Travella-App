@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { useParams, Link } from 'react-router-dom';
 import MapView from './MapView';
-import styles from './Registration.module.css';
 import { useUser } from '../UserContext';
 import styles from './UserProfile.module.css';
 import { PiSparkle } from "react-icons/pi";
