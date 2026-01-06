@@ -105,8 +105,6 @@ public class PostService {
                 PostImage postImage = new PostImage();
                 postImage.setFileName(file.getOriginalFilename());
                 postImage.setFilePath(fileName);
-                postImage.setContentType(file.getContentType());
-                postImage.setFileSize(file.getSize());
                 postImage.setPost(post);
                 postImageRepository.save(postImage);
             }

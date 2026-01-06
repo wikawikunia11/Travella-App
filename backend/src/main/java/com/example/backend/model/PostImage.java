@@ -26,9 +26,8 @@ public class PostImage {
     @Column(name = "media_file", nullable = false)
     private String filePath;
 
+    @Column(name = "original_name", nullable=false)
     private String fileName;
-    private String contentType;
-    private Long fileSize;
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)

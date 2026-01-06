@@ -49,6 +49,7 @@ CREATE TABLE description (
 CREATE TABLE medias (
     id_media SERIAL PRIMARY KEY,
     post_id INTEGER NOT NULL,
+    original_name VARCHAR(250) NOT NULL,
     media_file VARCHAR(250) NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts (id_post)
 );
