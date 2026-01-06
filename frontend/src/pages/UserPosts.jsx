@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import json_posts from '../assets/json_posts';
 import MapView from './MapView';
-import styles from './Registration.module.css';
+import styles from './UserProfile.module.css';
+import { PiSparkle } from "react-icons/pi";
 
 function UserPosts() {
   const { username } = useParams();
@@ -35,10 +36,18 @@ function UserPosts() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{width: "100rem", height: "100rem", borderRadius: "10px", backgroundColor: "#dce7daff" }}>
+    <div style={{display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            width: '100%',
+            backgroundColor: '#ffffff',
+            margin: '10px',
+            borderRadius: '24px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
+            border: '1px solid rgba(0, 0, 0, 0.05)'}}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px"}}>
-            <h2>The posts of 🦋{username}🦋</h2>
-            <MapView width="800px" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
+            <p style={{fontSize: "20px"}}>The posts of <PiSparkle /><b>{username}</b><PiSparkle /></p>
+            <MapView width="80%" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
             {selectedMarker ? (
                 <div>
                     <h3>{selectedMarker.name}</h3>
@@ -47,8 +56,10 @@ function UserPosts() {
             ) : (
                 <p>Click on a marker to see details.</p>
             )}
-            <Link to={`/profile/${username}/addpost`} style={{width: "100%"}}><button className={styles.button_box} style={{backgroundColor: "#225219ff"}}>
-                <p className={styles.button_text}>Add new post</p>
+            <Link to={`/profile/${username}/addpost`} style={{width: "80%"}}><button className={styles.button_box} style={{backgroundColor: "#225219ff"}}>
+                <p
+                    className={styles.button_text}
+                >Add new post</p>
             </button></Link>
         </div>
     </div>

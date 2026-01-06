@@ -46,3 +46,21 @@
     color: #282b30;
     font-size: 0.95rem;
 }
+.button_box {
+    background-color: #e49bff;
+    border-radius: 8px;
+    padding: 1%;
+    width: 100%;
+    margin: 24px 0;
+    justify-content: center;
+}
+.button_box:hover {
+    background-color: #d17ee6;
+    border: 1px solid #a730c5;
+}
+.button_text {
+    font-style: normal;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: #FFFFFF
+}
