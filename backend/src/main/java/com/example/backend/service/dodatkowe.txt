@@ -1,0 +1,47 @@
+@Transactional
+public ResponseEntity<?> addFriend(String loggedInUsername, String friendUsername) {
+    if (loggedInUsername.equals(friendUsername)) {
+        return ResponseEntity.badRequest().body("Can't add yourself to friends.");
+    }
+
+    return userRepository.findByUsername(loggedInUsername).map(user -> {
+        return userRepository.findByUsername(friendUsername).map(friend -> {
+
+            Friendship friendship = new Friendship(user.getIdUser(), friend.getIdUser());
+
+            if (friendshipRepository.existsByFirstUserIdAndSecondUserId(
+                    friendship.getFirstUserId(), friendship.getSecondUserId())) {
+                return ResponseEntity.badRequest().body("Friendship with " + friendUsername + " already exists.");
+            }
+
+            friendshipRepository.save(friendship);
+            return ResponseEntity.ok("Added " + friendUsername + " to friends.");
+
+        })
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + friendUsername + " does not exist."));
+    })
+    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Logged in user " + loggedInUsername + " does not exist."));
+}
+
+
+
+@Transactional
+public ResponseEntity<?> removeFriend(String loggedInUsername, String friendUsername) {
+    return userRepository.findByUsername(loggedInUsername).map(user -> {
+        return userRepository.findByUsername(friendUsername).map(friend -> {
+
+            Friendship friendship = new Friendship(user.getIdUser(), friend.getIdUser());
+
+            if (!friendshipRepository.existsByFirstUserIdAndSecondUserId(
+                    friendship.getFirstUserId(), friendship.getSecondUserId())) {
+                return ResponseEntity.badRequest().body("Friendship does not exist.");
+            }
+
+            friendshipRepository.deleteByFirstUserIdAndSecondUserId(friendship.getFirstUserId(), friendship.getSecondUserId());
+            return ResponseEntity.ok("Removed " + friendUsername + " from friends.");
+
+        })
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + friendUsername + " does not exist."));
+    })
+    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Logged in user " + loggedInUsername + " does not exist."));
+}
