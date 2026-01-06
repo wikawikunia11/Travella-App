@@ -23,19 +23,22 @@ public class FriendshipService {
     @Autowired
     private UserRepository userRepository;
 
+    public List<User> getFriendsList(User user) {
+        Long userId = user.getIdUser();
+        List<Friendship> friendships = friendshipRepository.findByFirstUserIdOrSecondUserId(userId, userId);
+
+        List<Long> friendIds = friendships.stream()
+                .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
+                .toList();
+
+        return userRepository.findAllById(friendIds);
+    }
+
     public ResponseEntity<?> getFriendsByUsername(String username) {
         return userRepository.findByUsername(username)
             .<ResponseEntity<?>>map(user -> {
 
-                Long userId = user.getIdUser();
-                List<Friendship> friendships = friendshipRepository
-                    .findByFirstUserIdOrSecondUserId(userId, userId);
-
-                List<Long> friendIds = friendships.stream()
-                    .map(f -> f.getFirstUserId().equals(userId) ? f.getSecondUserId() : f.getFirstUserId())
-                    .toList();
-
-                List<User> friends = userRepository.findAllById(friendIds);
+                List<User> friends = getFriendsList(user);
                 return ResponseEntity.ok(friends);
             })
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + username + " does not exist."));

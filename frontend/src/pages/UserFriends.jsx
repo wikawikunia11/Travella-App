@@ -51,7 +51,7 @@ function UserFriends() {
     }, [username, token, refresh]);
 
     function handleSearch() {
-        fetch(`http://localhost:8080/api/users/${newFriend}`, {
+        fetch(`http://localhost:8080/api/users/search?query=${newFriend}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -63,12 +63,14 @@ function UserFriends() {
             return response.json();
         })
         .then(data => {
-            const temp_found = processDataList([data]);
+            const temp_found = processDataList(data);
             setFoundFriends(temp_found);
-            setFound(true);
+            setFound(data.length > 0);
         })
         .catch(err => {
             setError(err.message);
+            setFoundFriends([]);
+            setFound(false);
         });
     }
 

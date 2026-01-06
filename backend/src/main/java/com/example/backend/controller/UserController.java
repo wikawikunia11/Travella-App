@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.service.FriendshipService;
+import com.example.backend.service.PostService;
 import com.example.backend.model.LoginRequest;
 
 @RestController
@@ -32,6 +35,9 @@ public class UserController {
 
     @Autowired
     private FriendshipService friendshipService;
+
+    @Autowired
+    private PostService postService;
 
     @GetMapping("/message")
     public String getMessage() {
@@ -91,5 +97,11 @@ public class UserController {
     @GetMapping("/users/search")
     public ResponseEntity<?> searchUsers(@RequestParam String query) {
         return userService.searchUsers(query);
+    }
+
+    @GetMapping("/users/{username}/friends-posts")
+    @PreAuthorize("#username == principal.username")
+    public ResponseEntity<?> getFriendsPosts(@PathVariable String username, Principal principal) {
+        return postService.getFriendsPosts(username);
     }
 }
