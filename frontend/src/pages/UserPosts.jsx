@@ -80,27 +80,40 @@ function UserPosts() {
         markerClicked={handleMarkerClick}
       />
       {selectedMarker ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "10px",
-            marginTop: "10px"
-          }}
-        >
-          {selectedMarker.images.map((url, index) => (
-            <img
-              key={index}
-              src={url}
-              alt={`Image ${index + 1}`}
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: "8px",
-                objectFit: "cover"
-              }}
-            />
-          ))}
+        <div style={{ width: "100%", marginTop: "10px" }}>
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              padding: "12px",
+              borderRadius: "8px",
+              marginBottom: "12px"
+            }}
+          >
+            <h3 style={{ marginBottom: "6px" }}>{selectedMarker.name}</h3>
+            <p>{selectedMarker.description}</p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "10px"
+            }}
+          >
+            {selectedMarker.images.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt={`Image ${index + 1}`}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "8px",
+                  objectFit: "cover"
+                }}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <p>Click on a marker to see details.</p>
