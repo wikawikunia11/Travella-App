@@ -82,6 +82,9 @@ function UserFriends() {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
+            setRefresh(true);
+            setFound(false);
+            setNewFriend("");
             return response;
         })
         .catch(e => console.log(e));
@@ -100,10 +103,10 @@ function UserFriends() {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
+            setRefresh(true);
             return response;
         })
         .catch(e => console.log(e));
-        setRefresh(true);
     }
 
     return (

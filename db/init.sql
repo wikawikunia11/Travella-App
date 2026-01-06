@@ -35,9 +35,8 @@ CREATE TABLE posts (
     visit_date DATE,
     longitude DECIMAL(9, 6),
     latitude DECIMAL(9, 6),
-    post_date TIMESTAMP DEFAULT NOW(),
-    visit_date DATE,
-    description_id INTEGER NOT NULL,
+    description VARCHAR(200),
+--     description_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
 
