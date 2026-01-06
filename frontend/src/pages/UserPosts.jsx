@@ -6,11 +6,28 @@ import { useUser } from "../UserContext";
 import styles from "./UserProfile.module.css";
 import { PiSparkle } from "react-icons/pi";
 
+const navButtonStyle = {
+  backgroundColor: "rgba(255, 255, 255, 0.8)",
+  border: "none",
+  borderRadius: "50%",
+  width: "36px",
+  height: "36px",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "18px",
+  fontWeight: "bold",
+  boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+  transition: "background 0.3s",
+};
+
 function UserPosts() {
   const { username } = useParams();
   const { user, token, login, logout } = useUser();
   const [posts, setPosts] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,9 +36,9 @@ function UserPosts() {
       const res = await fetch(
         `http://localhost:8080/api/users/${username}/friends`,
         {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
       if (!res.ok) return [];
 
@@ -55,9 +72,9 @@ function UserPosts() {
           )
         );
 
-        const mergedPosts = results.flat();
+          const mergedPosts = results.flat();
 
-        setPosts(mergedPosts);
+          setPosts(mergedPosts);
       } catch (err) {
         console.error(err);
         setError("Failed to load posts");
@@ -83,9 +100,9 @@ function UserPosts() {
       const res = await fetch(
         `http://localhost:8080/api/posts/${postId}/images`,
         {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
       if (!res.ok) return [];
       const paths = await res.json();
       const urls = await Promise.all(
@@ -98,14 +115,9 @@ function UserPosts() {
     }
   };
 
-  const removeMarkerById = (id) => {
-    setPosts((prev) => prev.filter((p) => p.idPost !== id));
-    if (selectedMarker && selectedMarker.id === id) {
-      setSelectedMarker(null);
-    }
-  };
 
-  const handleDeletePost = async () => {
+
+    const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
     try {
@@ -121,8 +133,8 @@ function UserPosts() {
 
       if (!res.ok) throw new Error("Delete failed");
 
-      removeMarkerById(selectedMarker.id);
-
+      setPosts((prev) => prev.filter((p) => p.idPost !== selectedMarker.id));
+      setSelectedMarker(null);
       toast.success("Post deleted");
     } catch (err) {
       console.error(err);
@@ -132,6 +144,7 @@ function UserPosts() {
 
   const handleMarkerClick = async (post) => {
     const images = await fetchImages(post.id);
+    setCurrentImageIndex(0);
     setSelectedMarker({ ...post, images });
   };
 
@@ -141,27 +154,29 @@ function UserPosts() {
   return (
     <div
       style={{
+      display: "flex",
+      gap: "10px",
+      width: "100%",
+      backgroundColor: "#ffffff",
+      margin: "10px",
+      borderRadius: "24px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
+      border: "1px solid rgba(0, 0, 0, 0.05)",
+    }}
+    >
+      {/* LEFT SIDE - MAP AND DETAILS */}
+      <div style={{
+        flex: 1,
+        padding: "20px",
         display: "flex",
         flexDirection: "column",
-        gap: "10px",
-        width: "100%",
-        backgroundColor: "#ffffff",
-        margin: "10px",
-        borderRadius: "24px",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
-        border: "1px solid rgba(0, 0, 0, 0.05)",
+        alignItems: "center",
+        gap: "20px",
+        padding: "20px",
+        overflowY: "auto"
       }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "20px",
-          padding: "20px",
-        }}
       >
-        <p style={{ fontSize: "20px" }}>
+       <p style={{ fontSize: "20px" }}>
           The posts of <PiSparkle />
           <b>{username}</b>
           <PiSparkle />
@@ -170,6 +185,7 @@ function UserPosts() {
           key={posts.map((p) => p.idPost).join("-")}
           width="80%"
           height="400px"
+          center={selectedMarker ? selectedMarker.position : undefined}
           markerData={posts.map((post) => ({
             id: post.idPost,
             name: post.caption,
@@ -205,7 +221,7 @@ function UserPosts() {
                 </h3>
 
                 {selectedMarker.username === user.username && (
-                  <button
+                   <button
                     onClick={handleDeletePost}
                     style={{
                       position: "absolute",
@@ -222,44 +238,86 @@ function UserPosts() {
                   </button>
                 )}
               </div>
-
-              <p>{selectedMarker.description}</p>
+              <p style={{ textAlign: "center", marginTop: "10px" }}>{selectedMarker.description}</p>
             </div>
 
-            {selectedMarker.images.length > 0 ? (
+            {selectedMarker.images.length > 0 && (
               <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                  gap: "10px",
-                }}
-              >
-                {selectedMarker.images.map((url, index) => (
-                  <img
-                    key={index}
-                    src={url}
-                    alt={`Image ${index + 1}`}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      borderRadius: "8px",
-                      objectFit: "cover",
-                    }}
-                  />
-                ))}
+              style={{
+                marginTop: "15px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px" }}
+                >
+
+                <div style={{ position: "relative", width: "100%", maxWidth: "500px" }}>
+                  {selectedMarker.images.length > 1 && (
+                    <button onClick={() => setCurrentImageIndex(prev => (prev === 0 ? selectedMarker.images.length - 1 : prev - 1))} style={{ ...navButtonStyle, position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", zIndex: 10 }}>❮</button>
+                  )}
+                  <img src={selectedMarker.images[currentImageIndex]} alt="Post" style={{ width: "100%", height: "300px", borderRadius: "12px", objectFit: "cover" }} />
+                  {selectedMarker.images.length > 1 && (
+                    <button onClick={() => setCurrentImageIndex(prev => (prev === selectedMarker.images.length - 1 ? 0 : prev + 1))} style={{ ...navButtonStyle, position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", zIndex: 10 }}>❯</button>
+                  )}
+                </div>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  {selectedMarker.images.map((_, i) => (
+                    <div key={i} onClick={() => setCurrentImageIndex(i)} style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: currentImageIndex === i ? "#225219ff" : "#ccc", cursor: "pointer" }} />
+                  ))}
+                </div>
               </div>
-            ) : (
-              <p style={{ textAlign: "center", color: "#666" }}>No images</p>
             )}
+            <button onClick={() => setSelectedMarker(null)} style={{ display: "block", margin: "15px auto", background: "none", border: "none", color: "#666", textDecoration: "underline", cursor: "pointer" }}>Close details</button>
           </div>
         ) : (
-          <p>Click on a marker to see details.</p>
+          <p
+            style={{
+              marginTop: "20px",
+              color: "#666"
+            }}
+            >Select a post from the list or map.</p>
         )}
-        <Link to={`/profile/${username}/addpost`} style={{ width: "100%" }}>
-          <button
-            className={styles.button_box}
-            style={{ backgroundColor: "#225219ff" }}
-          >
+      </div>
+
+      {/* RIGHT SIDE: POST LIST */}
+      <div style={{
+        width: "300px",
+        borderLeft: "1px solid #eee",
+        backgroundColor: "#fcfcfc",
+        display: "flex",
+        flexDirection: "column",
+        padding: "20px"
+      }}>
+        <h3 style={{ textAlign: "center", marginBottom: "20px" }}>Post List</h3>
+        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
+          {posts.map((post) => (
+
+            <button
+              key={post.idPost}
+              onClick={() => handleMarkerClick({
+                id: post.idPost,
+                name: post.caption,
+                description: post.description,
+                position: [post.latitude, post.longitude],
+                username: post.user.username
+              })}
+              style={{
+                padding: "12px",
+                textAlign: "left",
+                backgroundColor: selectedMarker?.id === post.idPost ? "#e8f5e9" : "#fff",
+                border: selectedMarker?.id === post.idPost ? "2px solid #225219ff" : "1px solid #ddd",
+                borderRadius: "10px",
+                cursor: "pointer",
+                fontWeight: selectedMarker?.id === post.idPost ? "bold" : "normal",
+                transition: "all 0.2s"
+              }}
+            >
+              {post.caption}
+            </button>
+          ))}
+        </div>
+        <Link to={`/profile/${username}/addpost`} style={{ textDecoration: "none", marginTop: "20px" }}>
+          <button className={styles.button_box} style={{ backgroundColor: "#225219ff", width: "100%", margin: 0 }}>
             <p className={styles.button_text}>Add new post</p>
           </button>
         </Link>
