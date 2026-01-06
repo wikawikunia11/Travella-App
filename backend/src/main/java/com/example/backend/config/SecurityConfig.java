@@ -50,7 +50,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
 
                 .requestMatchers("/api/login", "/api/users", "/api/posts/all", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/users/*/friends").permitAll()
+                .requestMatchers("/api/users/search", "/api/users/*/friends").permitAll()
                 .anyRequest().authenticated()
             )
             // can add role-based endpoints ex. .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
@@ -85,5 +86,10 @@ public class UserController {
     @DeleteMapping("/users/{friendUsername}/friends")
     public ResponseEntity<?> removeFriend(@PathVariable String friendUsername, Principal principal) {
         return friendshipService.removeFriend(principal.getName(), friendUsername);
-}
+    }
+
+    @GetMapping("/users/search")
+    public ResponseEntity<?> searchUsers(@RequestParam String query) {
+        return userService.searchUsers(query);
+    }
 }
