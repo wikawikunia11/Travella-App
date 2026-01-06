@@ -54,7 +54,33 @@ function UserPosts() {
     }
   };
 
+  const handleDeletePost = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
 
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/posts/${selectedMarker.idPost}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setPosts(prev =>
+        prev.filter(p => p.idPost !== selectedMarker.idPost)
+      );
+
+      toast.success("Post deleted");
+      setSelectedMarker(null);
+    } catch (err) {
+      console.error(err);
+      alert("Could not delete post");
+    }
+  };
 
   const handleMarkerClick = async (post) => {
     const images = await fetchImages(post.id);
@@ -75,12 +101,14 @@ function UserPosts() {
           id: post.idPost,
           name: post.caption,
           description: post.description,
-          position: [post.latitude, post.longitude]
+          position: [post.latitude, post.longitude],
+          username: post.user.username
         }))}
         markerClicked={handleMarkerClick}
       />
       {selectedMarker ? (
         <div style={{ width: "100%", marginTop: "10px" }}>
+          {/* Box posta */}
           <div
             style={{
               backgroundColor: "#ffffff",
@@ -89,31 +117,67 @@ function UserPosts() {
               marginBottom: "12px"
             }}
           >
-            <h3 style={{ marginBottom: "6px" }}>{selectedMarker.name}</h3>
+            {/* Tytuł i Delete */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative", // potrzebne do przycisku po prawej
+                marginBottom: "6px"
+              }}
+            >
+              <h3 style={{ margin: 0, textAlign: "center" }}>{selectedMarker.name}</h3>
+
+              {selectedMarker.username === username && (
+                <button
+                  onClick={handleDeletePost}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    backgroundColor: "#c62828",
+                    color: "white",
+                    border: "none",
+                    padding: "6px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+
+            {/* Opis */}
             <p>{selectedMarker.description}</p>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "10px"
-            }}
-          >
-            {selectedMarker.images.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Image ${index + 1}`}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: "8px",
-                  objectFit: "cover"
-                }}
-              />
-            ))}
-          </div>
+          {/* Zdjęcia */}
+          {selectedMarker.images.length > 0 ? (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "10px"
+              }}
+            >
+              {selectedMarker.images.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Image ${index + 1}`}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: "8px",
+                    objectFit: "cover"
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <p style={{ textAlign: "center", color: "#666" }}>No images</p>
+          )}
         </div>
       ) : (
         <p>Click on a marker to see details.</p>
