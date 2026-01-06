@@ -72,45 +72,43 @@ function UserFriends() {
         });
     }
 
-    function handleAddFriend(idUser) {
-        const data = {username: username, friendId: idUser};
+    function handleAddFriend(friendUsername) {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         };
-        fetch('http://localhost:8080/api/', requestOptions)
+        fetch(`http://localhost:8080/api/users/${friendUsername}/friends`, requestOptions)
         .then(response => {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
-            return response.json();
+            return response;
         })
-        .catch(error => console.error('Login error:', error));
+        .catch(e => console.log(e));
         setRefresh(true);
+        setFound(false);
+        setNewFriend("");
     }
 
-    function handleDeleteFriend(idUser) {
-        const data = {username: username, friendId: idUser};
+    function handleDeleteFriend(friendUsername) {
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         };
-        fetch('http://localhost:8080/api/', requestOptions)
+        fetch(`http://localhost:8080/api/users/${friendUsername}/friends`, requestOptions)
         .then(response => {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
-            return response.json();
+            return response;
         })
-        .catch(error => console.error('Login error:', error));
+        .catch(e => console.log(e));
         setRefresh(true);
     }
 
     return (
       <div className={styles.main}>
-          {error && <p className="error">{error}</p>}
+          {error && <p>{error}</p>}
           <p className={styles.title}>These are <b>{username}'s</b> friends</p>
           {friends.length === 0 ? (
               <p>No friends yet</p>
@@ -124,7 +122,7 @@ function UserFriends() {
                           </Link>
                           <h3>{friend.name} {friend.surname}</h3>
                           <p className={styles.bio}>{friend.biography}</p>
-                          <button className={styles.addButton} onClick={() => handleDeleteFriend(friend.idUser)}>
+                          <button className={styles.addButton} onClick={() => handleDeleteFriend(friend.username)}>
                             <BsPersonDashFill />
                             <p>Remove friend</p>
                         </button>
@@ -149,7 +147,7 @@ function UserFriends() {
                       </Link>
                       <h3>{friend.name} {friend.surname}</h3>
                       <p className={styles.bio}>{friend.biography}</p>
-                      <button className={styles.addButton} onClick={() => handleAddFriend(friend.idUser)}>
+                      <button className={styles.addButton} onClick={() => handleAddFriend(friend.username)}>
                           <BsFillPersonPlusFill />
                           <p>Add friend</p>
                       </button>
