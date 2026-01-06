@@ -53,7 +53,7 @@ function Login() {
             <p className={styles.above_input}>Login</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Password</p>
-            <input name="password" className={styles.input_box} placeholder="Password" type="password"/>
+            <input name="password" className={styles.input_box} placeholder="Password" type="password" autoComplete="off"/>
             <button type="submit" className={styles.button_box}>
               <p className={styles.button_text}>Log in</p>
             </button>

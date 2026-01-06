@@ -4,6 +4,7 @@ import styles from './UserFriends.module.css';
 import {FaSearchPlus} from "react-icons/fa";
 import {LuSendHorizontal} from "react-icons/lu";
 import { BsFillPersonPlusFill } from "react-icons/bs";
+import { BsPersonDashFill } from "react-icons/bs";
 import {useUser} from "../UserContext.jsx";
 
 function UserFriends() {
@@ -89,6 +90,24 @@ function UserFriends() {
         setRefresh(true);
     }
 
+    function handleDeleteFriend(idUser) {
+        const data = {username: username, friendId: idUser};
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        };
+        fetch('http://localhost:8080/api/', requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                setError("Couldn't add friend");
+            }
+            return response.json();
+        })
+        .catch(error => console.error('Login error:', error));
+        setRefresh(true);
+    }
+
     return (
       <div className={styles.main}>
           {error && <p className="error">{error}</p>}
@@ -105,6 +124,10 @@ function UserFriends() {
                           </Link>
                           <h3>{friend.name} {friend.surname}</h3>
                           <p className={styles.bio}>{friend.biography}</p>
+                          <button className={styles.addButton} onClick={() => handleDeleteFriend(friend.idUser)}>
+                            <BsPersonDashFill />
+                            <p>Remove friend</p>
+                        </button>
                       </li>
                   ))}
               </ul>
