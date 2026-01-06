@@ -1,1 +1,9 @@
 .env
+.idea
+.vscode
+uploads/
+!uploads/posts/
+!uploads/posts/1/
+!uploads/posts/1/**
+!uploads/posts/2/
+!uploads/posts/2/**

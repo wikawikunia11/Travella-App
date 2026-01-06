@@ -3,10 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './Registration.module.css';
 import logo from '../assets/logo.png';
 import { useUser } from '../UserContext';
+import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOffOutline } from "react-icons/io5";
 
 function Registration() {
   const { login } = useUser();
   const navigate = useNavigate();
+  const [type, setType] = useState('password');
+  const [off, setOff] = useState(true);
 
   const [message, setMessage] = useState('');
     function register(e) {
@@ -41,7 +45,14 @@ function Registration() {
               setMessage("Choose another username or check connection.");
             });
     }
-
+    const handleToggle = () => {
+        setOff(!off);
+        if (type==='password'){
+            setType('text')
+        } else {
+            setType('password')
+        }
+    }
     return (
     <div className={styles.root}>
       <div className={styles.image}></div>
@@ -60,7 +71,13 @@ function Registration() {
             <p className={styles.above_input}>Create username</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Create password</p>
-            <input name="password" className={styles.input_box} placeholder="Password" type="password"/>
+          <div className={styles.input_box} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <input name="password" placeholder="Password" type={type}
+                     autoComplete="current-password"/>
+              <span className="flex justify-around items-center" onClick={handleToggle}>
+                {off ? (<IoEyeOffOutline onClick={handleToggle} />) : (<IoEyeOutline onClick={handleToggle} />)}
+              </span>
+          </div>
             <button type="submit" className={styles.button_box}>
               <p className={styles.button_text}>Register</p>
             </button>

@@ -1,19 +1,29 @@
 import React, {useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { toast } from "react-toastify";
+import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import styles from './NewPostForm.module.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useUser } from '../UserContext';
+
+function normalizeLng(lng) {
+  return ((lng + 180) % 360 + 360) % 360 - 180;
+}
 
 function LocationMarker({setPosition, localize }) {
   const map = useMapEvents({
     click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng])
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      setPosition([lat, lng]);
     },
     locationfound(e) {
-      setPosition([e.latlng.lat, e.latlng.lng])
-      map.flyTo(e.latlng, map.getZoom())
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      setPosition([lat, lng]);
+      map.flyTo([lat, lng], map.getZoom())
     }
   })
 
@@ -30,22 +40,54 @@ export default function NewPostForm() {
   const [date, setDate] = useState(new Date());
   const [position, setPosition] = useState(null);
   const [localize, setLocalize] = useState(false);
+  const { token } = useUser();
+  const navigate = useNavigate();
+  const [previews, setPreviews] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  function handleImages(e) {
+    const files = Array.from(e.target.files);
+    const newFiles = files.filter(file => !selectedFiles.some(f => f.name === file.name));
+    setSelectedFiles(prev => [...prev, ...newFiles]);
+
+    setPreviews(prev => [...prev, ...newFiles.map(file => URL.createObjectURL(file))]);
+    e.target.value = null;
+  }
 
   function addPost(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
 
-    var postInfo = {};
-    formData.forEach(function(value, key){
-        postInfo[key] = value;
-    });
-    postInfo["longitude"] = position[0];
-    postInfo["latitude"] = position[1];
-    postInfo["visit_date"] = date;
-    var json = JSON.stringify(postInfo);
-
-    console.log(json);
+    if (!position) {
+      alert("Select location first");
+      return;
     }
+
+    const formData = new FormData();
+
+    formData.append("caption", e.target.caption.value);
+    formData.append("description", e.target.description.value);
+    formData.append("latitude", position[0]);
+    formData.append("longitude", normalizeLng(position[1]));
+    formData.append("visitDate", date.toISOString().split('T')[0]);
+    selectedFiles.forEach(file => formData.append("images", file));
+    setSelectedFiles([]);
+    setPreviews([]);
+
+    fetch('http://localhost:8080/api/posts/all', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    })
+    .then(res => {
+      if (res.ok) {
+        toast.success("Post added successfully!");
+        navigate(`/profile/${username}/posts`);
+      } else {
+        alert("An error occurred while adding the post.");
+      }
+    })
+    .catch(err => console.error(err));
+  }
 
   return (
     <div className={styles.root}>
@@ -66,6 +108,19 @@ export default function NewPostForm() {
             checked={localize}
             onChange={(e) => setLocalize(e.target.checked)} />
           </label>
+          <p className={styles.above_input}>Photos</p>
+          <input
+            type="file"
+            name="images"
+            accept="image/*"
+            multiple
+            className={styles.input_box}
+            onChange={handleImages}
+          />
+          <div className={styles.preview}>
+            {previews.map((src, i) => (
+            <img key={i} src={src} width="100" />))}
+          </div>
           <button type="submit" className={styles.button_box}>
             <p className={styles.button_text}>Add post</p>
           </button>

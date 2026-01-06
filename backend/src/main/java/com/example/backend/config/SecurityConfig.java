@@ -48,8 +48,9 @@ public class SecurityConfig {
             .cors(org.springframework.security.config.Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/login", "/api/users").permitAll()
-                .requestMatchers("/api/users/*/friends").permitAll()  // do testow
+
+                .requestMatchers("/api/login", "/api/users", "/api/posts/all", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/users/*/friends").permitAll()
                 .anyRequest().authenticated()
             )
             // can add role-based endpoints ex. .requestMatchers("/api/admin/**").hasRole("ADMIN")

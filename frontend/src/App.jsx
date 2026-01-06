@@ -9,9 +9,22 @@ import UserPosts from './pages/UserPosts';
 import NewPostForm from './pages/NewPostForm';
 import UserPage from './pages/UserPage';
 import UserProfile from './pages/UserProfile';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import UserFriends from './pages/UserFriends';
 
 function App() {
   return (
+    <>
+    <ToastContainer
+        position="bottom-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     <UserProvider>
       <Router>
         <Routes>
@@ -22,11 +35,13 @@ function App() {
             <Route path="/profile/:username/" element={<UserProfile />} />
             <Route path="/profile/:username/edit" element={<UserEdit />} />
             <Route path="/profile/:username/posts" element={<UserPosts />} />
+            <Route path="/profile/:username/friends" element={<UserFriends />} />
             <Route path="/profile/:username/addpost" element={<NewPostForm />} />
           </Route>
         </Routes>
       </Router>
     </UserProvider>
+    </>
   );
 }
 

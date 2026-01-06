@@ -35,7 +35,8 @@ CREATE TABLE posts (
     visit_date DATE,
     longitude DECIMAL(9, 6),
     latitude DECIMAL(9, 6),
-    description_id INTEGER NOT NULL,
+    description VARCHAR(200),
+--     description_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
 
@@ -48,6 +49,7 @@ CREATE TABLE description (
 CREATE TABLE medias (
     id_media SERIAL PRIMARY KEY,
     post_id INTEGER NOT NULL,
+    original_name VARCHAR(250) NOT NULL,
     media_file VARCHAR(250) NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts (id_post)
 );
