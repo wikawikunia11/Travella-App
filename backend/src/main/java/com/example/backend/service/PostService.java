@@ -1,27 +1,25 @@
 package com.example.backend.service;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.ResponseEntity;
-import org.springframework.core.io.Resource;
-
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.model.Post;
 import com.example.backend.model.PostImage;
 import com.example.backend.model.User;
+import com.example.backend.repository.PostImageRepository;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.PostImageRepository;
+
 import jakarta.transaction.Transactional;
 
 
@@ -124,11 +122,34 @@ public class PostService {
                 if (!foundPost.getUser().getUsername().equals(username)) {
                     throw new RuntimeException("Unauthorized to delete this post");
                 }
+                deleteImagesForPost(idPost);
                 postRepository.delete(foundPost);
             },
             () -> {
                 throw new RuntimeException("Post not found");
             });
+    }
+
+    private void deleteImagesForPost(Long postId) {
+        List<PostImage> images = postImageRepository.findByPost_IdPost(postId);
+
+        for (PostImage image : images) {
+            Path imagePath = Paths.get("/app/uploads/posts", String.valueOf(postId), image.getFilePath());
+            try {
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to delete image file: " + image.getFileName(), e);
+            }
+
+            postImageRepository.deleteById(image.getIdImage());
+        }
+
+        Path postDir = Paths.get("/app/uploads/posts", String.valueOf(postId));
+        try {
+            Files.deleteIfExists(postDir);
+        } catch (IOException e) {
+            System.err.println("Failed to delete post directory: " + postDir);
+        }
     }
 
     public List<Post> getPostsByUsername(String username) {

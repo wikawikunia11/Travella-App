@@ -14,13 +14,16 @@ L.Icon.Default.mergeOptions({
 
 function PostMarker({postInfo, markerClicked}) {
     return (
-        <Marker
-          position={postInfo.position}
-          eventHandlers={{click: () => markerClicked(postInfo)}}
-          >
-            <Popup>{postInfo.name}</Popup>
-        </Marker>
-    )
+    <Marker
+      key={postInfo.id}
+      position={postInfo.position}
+      eventHandlers={{
+        click: () => markerClicked(postInfo),
+      }}
+    >
+      <Popup>{postInfo.name}</Popup>
+    </Marker>
+  );
 }
 
 export default PostMarker;

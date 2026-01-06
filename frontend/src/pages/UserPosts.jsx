@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from "react-toastify";
 import { useParams, Link } from 'react-router-dom';
 import MapView from './MapView';
 import styles from './Registration.module.css';
@@ -54,12 +55,19 @@ function UserPosts() {
     }
   };
 
+  const removeMarkerById = (id) => {
+    setPosts(prev => prev.filter(p => p.idPost !== id));
+    if (selectedMarker && selectedMarker.id === id) {
+      setSelectedMarker(null);
+    }
+  };
+
   const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/posts/${selectedMarker.idPost}`,
+        `http://localhost:8080/api/posts/${selectedMarker.id}`,
         {
           method: "DELETE",
           headers: {
@@ -70,12 +78,9 @@ function UserPosts() {
 
       if (!res.ok) throw new Error("Delete failed");
 
-      setPosts(prev =>
-        prev.filter(p => p.idPost !== selectedMarker.idPost)
-      );
+      removeMarkerById(selectedMarker.id);
 
       toast.success("Post deleted");
-      setSelectedMarker(null);
     } catch (err) {
       console.error(err);
       alert("Could not delete post");
@@ -95,6 +100,7 @@ function UserPosts() {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px"}}>
       <h2>The posts of 🦋{username}🦋</h2>
       <MapView
+        key={posts.map(p => p.idPost).join("-")}
         width="800px"
         height="400px"
         markerData={posts.map(post => ({
@@ -117,13 +123,12 @@ function UserPosts() {
               marginBottom: "12px"
             }}
           >
-            {/* Tytuł i Delete */}
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                position: "relative", // potrzebne do przycisku po prawej
+                position: "relative",
                 marginBottom: "6px"
               }}
             >
@@ -148,11 +153,9 @@ function UserPosts() {
               )}
             </div>
 
-            {/* Opis */}
             <p>{selectedMarker.description}</p>
           </div>
 
-          {/* Zdjęcia */}
           {selectedMarker.images.length > 0 ? (
             <div
               style={{
