@@ -8,7 +8,7 @@ import { PiSparkle } from "react-icons/pi";
 
 function UserPosts() {
   const { username } = useParams();
-  const { token } = useUser();
+  const { user, token, login, logout } = useUser();
   const [posts, setPosts] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -166,7 +166,7 @@ function UserPosts() {
                   {selectedMarker.name}
                 </h3>
 
-                {selectedMarker.username === username && (
+                {selectedMarker.username === user.username && (
                   <button
                     onClick={handleDeletePost}
                     style={{
