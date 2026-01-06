@@ -9,9 +9,21 @@ import UserPosts from './pages/UserPosts';
 import NewPostForm from './pages/NewPostForm';
 import UserPage from './pages/UserPage';
 import UserProfile from './pages/UserProfile';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
+    <>
+    <ToastContainer
+        position="bottom-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     <UserProvider>
       <Router>
         <Routes>
@@ -27,6 +39,7 @@ function App() {
         </Routes>
       </Router>
     </UserProvider>
+    </>
   );
 }
 

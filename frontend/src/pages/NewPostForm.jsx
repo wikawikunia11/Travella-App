@@ -1,4 +1,5 @@
 import React, {useState, useEffect } from 'react';
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -79,7 +80,7 @@ export default function NewPostForm() {
     })
     .then(res => {
       if (res.ok) {
-        alert("Post added successfully!");
+        toast.success("Post added successfully!");
         navigate(`/profile/${username}/posts`);
       } else {
         alert("An error occurred while adding the post.");
