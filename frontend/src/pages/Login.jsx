@@ -29,13 +29,12 @@ function Login() {
             return response.json();
           })
           .then(apiResponse => {
-        const userData = {
-            username: username
-        };
-        const tokenValue = apiResponse.token;
-
-        login(userData, tokenValue);
-        navigate(`/profile/${username}`);
+          const userData = {
+              username: username
+          };
+          const tokenValue = apiResponse.token;
+          login(userData, tokenValue);
+          navigate(`/profile/${username}`);
       })
       .catch(error => console.error('Login error:', error));
     }
@@ -54,7 +53,7 @@ function Login() {
             <p className={styles.above_input}>Login</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Password</p>
-            <input name="password" className={styles.input_box} placeholder="Password" type="password"/>
+            <input name="password" className={styles.input_box} placeholder="Password" type="password" autoComplete="off"/>
             <button type="submit" className={styles.button_box}>
               <p className={styles.button_text}>Log in</p>
             </button>

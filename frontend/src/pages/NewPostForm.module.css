@@ -1,13 +1,12 @@
 .root {
     display: flex;
     flex-direction: row;
-    width: 100rem;
+    width: 100%;
 }
-
 .left_panel {
     flex: 1;
     display: flex;
-    height: 100rem;
+    height: 100%;
     flex-direction: column;
     padding: 30px;
     margin: 10px;
@@ -15,8 +14,8 @@
 }
 .map_view {
     flex: 1;
-    width: 50rem;
-    height: 80rem;
+    width: 50%;
+    height: 90%;
 }
 .username {
     color: rgb(1, 101, 27);
