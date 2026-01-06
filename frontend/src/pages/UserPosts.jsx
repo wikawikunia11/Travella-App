@@ -29,7 +29,7 @@ function UserPosts() {
         });
         setLoading(false);
       })
-      .catch(err => { setLoading(false); setPosts(json_posts); console.log(posts);});
+      .catch(err => { setLoading(false); setPosts(json_posts); console.log(err);});
   }, [username]);
 
   if (loading) return <p>Loading...</p>;
@@ -49,7 +49,7 @@ function UserPosts() {
             <p style={{fontSize: "20px"}}>The posts of <PiSparkle /><b>{username}</b><PiSparkle /></p>
             <MapView width="80%" height="400px" markerData={posts} markerClicked={setSelectedMarker}/>
             {selectedMarker ? (
-                <div>
+                <div className={styles.stats} style={{flexDirection: 'column', alignItems: 'center'}}>
                     <h3>{selectedMarker.name}</h3>
                     <p>{selectedMarker.description}</p>
                 </div>
