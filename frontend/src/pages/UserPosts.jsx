@@ -14,22 +14,59 @@ function UserPosts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchFriends = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/users/${username}/friends`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) return [];
+
+      const data = await res.json();
+
+      if (typeof data === "string") {
+        console.error("Friends error:", data);
+        return [];
+      }
+
+      return data.map((u) => u.username);
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    fetch(`http://localhost:8080/api/posts/user/${username}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to fetch posts");
-        return response.json();
-      })
-      .then((data) => {
-        setPosts(data);
+    const fetchAllPosts = async () => {
+      try {
+        setLoading(true);
+
+        const friends = await fetchFriends();
+        const users = [username, ...friends];
+
+        const results = await Promise.all(
+          users.map((u) =>
+            fetch(`http://localhost:8080/api/posts/user/${u}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }).then((r) => (r.ok ? r.json() : []))
+          )
+        );
+
+        const mergedPosts = results.flat();
+
+        setPosts(mergedPosts);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load posts");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchAllPosts();
   }, [username, token]);
 
   const fetchImageWithToken = async (url) => {
@@ -139,6 +176,7 @@ function UserPosts() {
             description: post.description,
             position: [post.latitude, post.longitude],
             username: post.user.username,
+            isMine: post.user.username === user.username,
           }))}
           markerClicked={handleMarkerClick}
         />
