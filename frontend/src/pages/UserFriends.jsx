@@ -62,8 +62,19 @@ function UserFriends() {
         })
         .then(data => {
             const temp_found = processDataList(data);
-            setFoundFriends(temp_found);
-            setFound(data.length > 0);
+
+            const filtered = temp_found.filter(foundUser => {
+                const isNotMe = foundUser.username !== user.username;
+                const isNotAlreadyFriend = !friends.some(f => f.username === foundUser.username);
+
+                return isNotMe && isNotAlreadyFriend;
+            });
+
+            setFoundFriends(filtered);
+            setFound(filtered.length > 0);
+
+            if (filtered.length === 0 && data.length > 0) setError("All found users are you or your friends.");
+
         })
         .catch(err => {
             setError(err.message);
@@ -82,13 +93,12 @@ function UserFriends() {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
-            setRefresh(!refresh);
+            setRefresh(prev => !prev);
             setFound(false);
             setNewFriend("");
             return response;
         })
         .catch(e => console.log(e));
-        setRefresh(!refresh);
         setFound(false);
         setNewFriend("");
     }
