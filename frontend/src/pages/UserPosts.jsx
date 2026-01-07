@@ -63,7 +63,7 @@ function UserPosts() {
       });
 
   }, [username, token, user.username]);
-  
+
 
   const fetchImageWithToken = async (url) => {
     const res = await fetch(url, {
@@ -94,9 +94,19 @@ function UserPosts() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString("pl-PL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-
-    const handleDeletePost = async () => {
+  const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
     try {
@@ -120,7 +130,7 @@ function UserPosts() {
       alert("Could not delete post");
     }
   };
-    
+
   const handleMarkerClick = async (post) => {
     const images = await fetchImages(post.id);
     setCurrentImageIndex(0);
@@ -170,6 +180,7 @@ function UserPosts() {
             description: post.description,
             position: [post.latitude, post.longitude],
             username: post.user.username,
+            postDate: post.postDate,
             isMine: post.user.username === user.username,
           }))}
           markerClicked={handleMarkerClick}
@@ -216,6 +227,9 @@ function UserPosts() {
                   </button>
                 )}
               </div>
+              <p style={{ textAlign: "center", fontSize: "14px", color: "#777" }}>
+                by <b>{selectedMarker.username}</b> · {formatDate(selectedMarker.postDate)}
+              </p>
               <p style={{ textAlign: "center", marginTop: "10px" }}>{selectedMarker.description}</p>
             </div>
 
@@ -277,7 +291,8 @@ function UserPosts() {
                 name: post.caption,
                 description: post.description,
                 position: [post.latitude, post.longitude],
-                username: post.user.username
+                username: post.user.username,
+                postDate: post.postDate
               })}
               style={{
                 padding: "12px",
@@ -290,7 +305,10 @@ function UserPosts() {
                 transition: "all 0.2s"
               }}
             >
-              {post.caption}
+              <div style={{ fontWeight: "bold" }}>{post.caption}</div>
+              <div style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
+                {post.user.username} · {formatDate(post.postDate)}
+              </div>
             </button>
           ))}
         </div>
