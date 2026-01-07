@@ -61,6 +61,17 @@ function UserSidebar() {
           <h3>{profile.username}</h3>
         </div>
         <div className={styles.menu}>
+          {user !== null && user.username !== username && (
+            <div className={styles.menuItem}>
+              <CgProfile className={styles.icon} />
+              <button
+                className={styles.button}
+                onClick={() => navigate(`/profile/${user.username}`)}
+              >
+                Back to profile
+              </button>
+            </div>
+          )}
           <div className={styles.menuItem}>
             <CgProfile className={styles.icon}/>
             <Link to={`/profile/${username}`}>
