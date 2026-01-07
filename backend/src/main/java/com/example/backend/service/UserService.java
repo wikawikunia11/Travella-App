@@ -36,6 +36,16 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerUser(User newUser) {
+        if (newUser.getUsername() == null || newUser.getUsername().isBlank() ||
+        newUser.getPassword() == null || newUser.getPassword().isBlank() ||
+        newUser.getName() == null || newUser.getName().isBlank() ||
+        newUser.getSurname() == null || newUser.getSurname().isBlank()) {
+            return new ResponseEntity<>(
+                "All fields are required.",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
         if (userRepository.findByUsername(newUser.getUsername()).isPresent()) {
             return new ResponseEntity<>(
                 "User '" + newUser.getUsername() + "' already exists.",

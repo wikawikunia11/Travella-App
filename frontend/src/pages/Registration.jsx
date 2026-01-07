@@ -28,10 +28,12 @@ function Registration() {
           body: JSON.stringify(userData)
         };
         fetch('http://localhost:8080/api/users', requestOptions)
-          .then(response => {
+          .then(async response => {
             if (!response.ok) {
-              setMessage("Choose another username.")
-              throw new Error(message);
+              const errorMess = await response.text();
+              if (errorMess.includes("required")) setMessage("Please fill in all fields.")
+              else setMessage("Choose another username.")
+              throw new Error(errorMess);
             }
             return response.json();
           })
@@ -42,7 +44,6 @@ function Registration() {
             })
             .catch(error => {
               console.error('Error:', error);
-              setMessage("Choose another username or check connection.");
             });
     }
     const handleToggle = () => {
