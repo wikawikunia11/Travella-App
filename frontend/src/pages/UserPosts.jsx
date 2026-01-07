@@ -96,14 +96,24 @@ function UserPosts() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
+
+    const hasTime = dateString.includes("T");
     const date = new Date(dateString);
-    return date.toLocaleString("pl-PL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+
+    return date.toLocaleString("pl-PL", hasTime
+      ? {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      : {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+    );
   };
 
   const handleDeletePost = async () => {
@@ -180,7 +190,7 @@ function UserPosts() {
             description: post.description,
             position: [post.latitude, post.longitude],
             username: post.user.username,
-            postDate: post.postDate,
+            visitDate: post.visitDate,
             isMine: post.user.username === user.username,
           }))}
           markerClicked={handleMarkerClick}
@@ -228,7 +238,7 @@ function UserPosts() {
                 )}
               </div>
               <p style={{ textAlign: "center", fontSize: "14px", color: "#777" }}>
-                by <b>{selectedMarker.username}</b> · {formatDate(selectedMarker.postDate)}
+                by <b>{selectedMarker.username}</b> · {formatDate(selectedMarker.visitDate)}
               </p>
               <p style={{ textAlign: "center", marginTop: "10px" }}>{selectedMarker.description}</p>
             </div>
@@ -292,7 +302,7 @@ function UserPosts() {
                 description: post.description,
                 position: [post.latitude, post.longitude],
                 username: post.user.username,
-                postDate: post.postDate
+                visitDate: post.visitDate
               })}
               style={{
                 padding: "12px",
@@ -307,7 +317,7 @@ function UserPosts() {
             >
               <div style={{ fontWeight: "bold" }}>{post.caption}</div>
               <div style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
-                {post.user.username} · {formatDate(post.postDate)}
+                {post.user.username} · {formatDate(post.visitDate)}
               </div>
             </button>
           ))}
