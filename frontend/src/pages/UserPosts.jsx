@@ -322,11 +322,14 @@ function UserPosts() {
             </button>
           ))}
         </div>
-        <Link to={`/profile/${username}/addpost`} style={{ textDecoration: "none", marginTop: "20px" }}>
-          <button className={styles.button_box} style={{ backgroundColor: "#225219ff", width: "100%", margin: 0 }}>
-            <p className={styles.button_text}>Add new post</p>
-          </button>
-        </Link>
+
+        {username === user.username && (
+          <Link to={`/profile/${username}/addpost`} style={{ textDecoration: "none", marginTop: "20px" }}>
+            <button className={styles.button_box} style={{ backgroundColor: "#225219ff", width: "100%", margin: 0 }}>
+              <p className={styles.button_text}>Add new post</p>
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );
