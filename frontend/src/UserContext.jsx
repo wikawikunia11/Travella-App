@@ -11,6 +11,7 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || null;
   });
+  const [refresh, setRefresh] = useState(false);
 
   const login = (userData, tokenValue) => {
 
@@ -30,7 +31,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, token, login, logout }}>
+    <UserContext.Provider value={{ user, token, login, logout, refresh, setRefresh }}>
       {children}
     </UserContext.Provider>
   );

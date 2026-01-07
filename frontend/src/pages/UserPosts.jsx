@@ -5,6 +5,7 @@ import MapView from "./MapView";
 import { useUser } from "../UserContext";
 import styles from "./UserProfile.module.css";
 import { PiSparkle } from "react-icons/pi";
+import {useMap} from "react-leaflet";
 
 const navButtonStyle = {
   backgroundColor: "rgba(255, 255, 255, 0.8)",
@@ -119,7 +120,7 @@ function UserPosts() {
       alert("Could not delete post");
     }
   };
-
+    
   const handleMarkerClick = async (post) => {
     const images = await fetchImages(post.id);
     setCurrentImageIndex(0);
@@ -150,7 +151,6 @@ function UserPosts() {
         flexDirection: "column",
         alignItems: "center",
         gap: "20px",
-        padding: "20px",
         overflowY: "auto"
       }}
       >

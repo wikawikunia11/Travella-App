@@ -12,7 +12,7 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 function UserSidebar() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user, token, login, logout } = useUser();
+  const { user, token, login, logout, refresh, setRefresh } = useUser();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ function UserSidebar() {
 
   useEffect(() => {
   if (!token || token === "null") return;
-
+  setRefresh(false);
   setLoading(true);
   fetch(`http://localhost:8080/api/users/${username}`, {
     method: 'GET',
@@ -39,7 +39,7 @@ function UserSidebar() {
     setError(err.message);
     setLoading(false);
   });
-}, [username, token]);
+}, [username, token, refresh]);
 
   function handleLogout() {
     logout();

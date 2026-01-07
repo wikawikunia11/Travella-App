@@ -9,8 +9,7 @@ import {useUser} from "../UserContext.jsx";
 
 function UserFriends() {
     const { username } = useParams();
-    const navigate = useNavigate();
-    const { token } = useUser();
+    const { token, user } = useUser();
     const [friends, setFriends] = useState([]);
     const [newFriend, setNewFriend] = useState(""); // their username
     const [foundFriends, setFoundFriends] = useState([]); // found profile
@@ -31,7 +30,6 @@ function UserFriends() {
     }
 
     useEffect(() => {
-        setRefresh(false);
         fetch(`http://localhost:8080/api/users/${username}/friends`, {
             method: 'GET',
             headers: {
@@ -84,13 +82,13 @@ function UserFriends() {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
-            setRefresh(true);
+            setRefresh(!refresh);
             setFound(false);
             setNewFriend("");
             return response;
         })
         .catch(e => console.log(e));
-        setRefresh(true);
+        setRefresh(!refresh);
         setFound(false);
         setNewFriend("");
     }
@@ -105,7 +103,7 @@ function UserFriends() {
             if (!response.ok) {
                 setError("Couldn't add friend");
             }
-            setRefresh(true);
+            setRefresh(!refresh);
             return response;
         })
         .catch(e => console.log(e));
@@ -127,23 +125,27 @@ function UserFriends() {
                           </Link>
                           <h3>{friend.name} {friend.surname}</h3>
                           <p className={styles.bio}>{friend.biography}</p>
+                          {(user !== null && user.username === username) && (
                           <button className={styles.addButton} onClick={() => handleDeleteFriend(friend.username)}>
                             <BsPersonDashFill />
                             <p>Remove friend</p>
-                        </button>
+                          </button>)}
                       </li>
                   ))}
               </ul>
           )}
-          <h3 style={{marginTop: '20px'}}>Search for new friends</h3>
-          <div className={styles.searchBar}>
-              <FaSearchPlus size={'25px'}/>
-              <input name="new_friend" placeholder="Search by username" value={newFriend} onChange={(e) => {setNewFriend(e.target.value)}} />
-              <button onClick={handleSearch}>
-                <LuSendHorizontal size={'25px'}/>
-              </button>
-          </div>
-          {found && <div className={styles.friendsList}>
+          {(user !== null && user.username === username) && (
+              <div>
+                  <h3 style={{marginTop: '20px'}}>Search for new friends</h3>
+                  <div className={styles.searchBar}>
+                      <FaSearchPlus size={'25px'}/>
+                      <input name="new_friend" placeholder="Search by username" value={newFriend} onChange={(e) => {setNewFriend(e.target.value)}} />
+                      <button onClick={handleSearch}>
+                        <LuSendHorizontal size={'25px'}/>
+                      </button>
+                  </div>
+              </div>)}
+          {(user !== null && user.username === username) && found && <div className={styles.friendsList}>
               {foundFriends.map((friend) => (
                   <div key={friend.username} className={styles.friend}>
                       <img src={friend.profilePic} alt={friend.name} className={styles.img} />

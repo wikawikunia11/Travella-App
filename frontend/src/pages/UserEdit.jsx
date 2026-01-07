@@ -5,7 +5,7 @@ import { useUser } from '../UserContext';
 function UserEdit() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { token, user: loggedInUser } = useUser();
+  const { token, user: loggedInUser, refresh, setRefresh} = useUser();
   const [user, setUser] = useState({
     name: '',
     surname: '',
@@ -50,7 +50,7 @@ function UserEdit() {
         setLoading(false);
       })
       .catch(err => { setError(err.message); setLoading(false); });
-  }, [username, token]);
+  }, [username, token, refresh]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,6 +74,7 @@ function UserEdit() {
         return response.json();
       })
       .then(() => {
+        setRefresh(true);
         navigate(`/profile/${username}`);
       })
       .catch(err => setError(err.message));
@@ -89,7 +90,9 @@ function UserEdit() {
         <img
           src={user.profilePic || defaultAvatar}
           alt="profile"
-          style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+          style={{ width: "80px", height: "80px", borderRadius: "50%",
+            objectFit: 'scale-down',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'}}
         />
         <p style={{ fontSize: "1.5rem" }}>{user.username}</p>
       </div>
@@ -101,7 +104,7 @@ function UserEdit() {
           value={user.name}
           onChange={handleChange}
           placeholder="First name"
-          style={{width: '30%', fontSize: '1rem'}}
+          style={{width: '30%', fontSize: '1rem', border: '1px solid #aeb1b6', borderRadius: '10px'}}
         />
         <input
           type="text"
@@ -109,7 +112,7 @@ function UserEdit() {
           value={user.surname}
           onChange={handleChange}
           placeholder="Last name"
-          style={{width: '30%', fontSize: '1rem'}}
+          style={{width: '30%', fontSize: '1rem', border: '1px solid #aeb1b6', borderRadius: '10px'}}
         />
         <textarea
           name="biography"

@@ -40,7 +40,7 @@ export default function NewPostForm() {
   const [date, setDate] = useState(new Date());
   const [position, setPosition] = useState(null);
   const [localize, setLocalize] = useState(false);
-  const { token } = useUser();
+  const { user, token } = useUser();
   const navigate = useNavigate();
   const [previews, setPreviews] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -88,7 +88,10 @@ export default function NewPostForm() {
     })
     .catch(err => console.error(err));
   }
-
+  if (user === null || user.username !== username)
+    return (
+        <h2>Access forbidden</h2>
+    )
   return (
     <div className={styles.root}>
       <div className={styles.left_panel}>
