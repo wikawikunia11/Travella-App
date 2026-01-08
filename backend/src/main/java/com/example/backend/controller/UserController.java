@@ -13,16 +13,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
-import com.example.backend.service.FriendshipService;
-import com.example.backend.service.PostService;
 import com.example.backend.model.LoginRequest;
 
 @RestController
@@ -33,11 +28,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private FriendshipService friendshipService;
-
-    @Autowired
-    private PostService postService;
 
     @GetMapping("/message")
     public String getMessage() {
@@ -79,29 +69,4 @@ public class UserController {
         return userService.updateUser(username, updatedUser, principal.getName());
     }
 
-    @GetMapping("/users/{username}/friends")
-    public ResponseEntity<?> getFriendsByUsername(@PathVariable String username) {
-        return friendshipService.getFriendsByUsername(username);
-    }
-
-    @PostMapping("/users/{friendUsername}/friends")
-    public ResponseEntity<?> addFriend(@PathVariable String friendUsername, Principal principal) {
-        return friendshipService.addFriend(principal.getName(), friendUsername);
-    }
-
-    @DeleteMapping("/users/{friendUsername}/friends")
-    public ResponseEntity<?> removeFriend(@PathVariable String friendUsername, Principal principal) {
-        return friendshipService.removeFriend(principal.getName(), friendUsername);
-    }
-
-    @GetMapping("/users/search")
-    public ResponseEntity<?> searchUsers(@RequestParam String query) {
-        return userService.searchUsers(query);
-    }
-
-    @GetMapping("/users/{username}/friends-posts")
-    @PreAuthorize("#username == principal.username")
-    public ResponseEntity<?> getFriendsPosts(@PathVariable String username, Principal principal) {
-        return postService.getFriendsPosts(username);
-    }
 }
