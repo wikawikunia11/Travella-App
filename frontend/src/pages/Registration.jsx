@@ -74,7 +74,7 @@ function Registration() {
             <p className={styles.above_input}>Create password</p>
           <div className={styles.input_box} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
               <input name="password" placeholder="Password" type={type}
-                     autoComplete="current-password"/>
+                     autoComplete="off"/>
               <span className="flex justify-around items-center" onClick={handleToggle}>
                 {off ? (<IoEyeOffOutline onClick={handleToggle} />) : (<IoEyeOutline onClick={handleToggle} />)}
               </span>

@@ -12,16 +12,19 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 function UserSidebar() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user, token, login, logout, refresh, setRefresh } = useUser();
+  const { user, token, logout, refresh, setRefresh } = useUser();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const defaultAvatar = "/vite.svg";
 
   useEffect(() => {
-  if (!token || token === "null") return;
+    if (!token || token === "null") {
+      setLoading(false);
+      setError('No token - no access');
+      return;
+    }
   setRefresh(false);
-  setLoading(true);
   fetch(`http://localhost:8080/api/users/${username}`, {
     method: 'GET',
     headers: {

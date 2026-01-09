@@ -104,13 +104,14 @@ export default function NewPostForm() {
           <p className={styles.above_input}>Description</p>
           <textarea name="description" className={styles.input_box} style={{height: "300px", resize: 'none'}} placeholder="Post description" />
           <p className={styles.above_input}>Pick visiting date</p>
-          <DatePicker className={styles.date_picker} dateFormat={'dd - MM - YYYY'} selected={date} onSelect={e => setDate(e)} />
-          <label className={styles.checkbox}> Localize me
+          <DatePicker className={styles.date_picker} showMonthYearDropdown={true}  dateFormat={'dd - MM - YYYY'} selected={date} onSelect={e => setDate(e)} />
+          <div className={styles.checkbox}>
+            <p> Localize me</p>
             <input
             type="checkbox"
             checked={localize}
             onChange={(e) => setLocalize(e.target.checked)} />
-          </label>
+          </div>
           <p className={styles.above_input}>Photos</p>
           <input
             type="file"

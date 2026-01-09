@@ -5,7 +5,6 @@ import MapView from "./MapView";
 import { useUser } from "../UserContext";
 import styles from "./UserProfile.module.css";
 import { PiSparkle } from "react-icons/pi";
-import {useMap} from "react-leaflet";
 
 const navButtonStyle = {
   backgroundColor: "rgba(255, 255, 255, 0.8)",
@@ -25,7 +24,7 @@ const navButtonStyle = {
 
 function UserPosts() {
   const { username } = useParams();
-  const { user, token, login, logout } = useUser();
+  const { user, token } = useUser();
   const [posts, setPosts] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -35,6 +34,8 @@ function UserPosts() {
   useEffect(() => {
     if (!token || token === "null" || !token.includes('.')) {
       console.log(token);
+      setLoading(false);
+      setError('No token - no access');
       return;
     }
 
@@ -44,7 +45,7 @@ function UserPosts() {
       headers: { Authorization: `Bearer ${token}` },
     }).then(res => res.ok ? res.json() : []);
 
-    const friendsPosts = (username === user.username)
+    const friendsPosts = (user !== null && username === user.username)
       ? fetch(`http://localhost:8080/api/users/${username}/friends-posts`, {
           headers: { Authorization: `Bearer ${token}` },
         }).then(res => res.ok ? res.json() : [])
@@ -62,7 +63,7 @@ function UserPosts() {
         setLoading(false);
       });
 
-  }, [username, token, user.username]);
+  }, [username, token, user]);
 
 
   const fetchImageWithToken = async (url) => {
@@ -191,7 +192,7 @@ function UserPosts() {
             position: [post.latitude, post.longitude],
             username: post.user.username,
             visitDate: post.visitDate,
-            isMine: post.user.username === user.username,
+            isMine: user !== null && post.user.username === user.username,
           }))}
           markerClicked={handleMarkerClick}
         />
@@ -219,7 +220,7 @@ function UserPosts() {
                   {selectedMarker.name}
                 </h3>
 
-                {selectedMarker.username === user.username && (
+                {user !== null && selectedMarker.username === user.username && (
                    <button
                     onClick={handleDeletePost}
                     style={{
@@ -323,7 +324,7 @@ function UserPosts() {
           ))}
         </div>
 
-        {username === user.username && (
+        {user !== null && username === user.username && (
           <Link to={`/profile/${username}/addpost`} style={{ textDecoration: "none", marginTop: "20px" }}>
             <button className={styles.button_box} style={{ backgroundColor: "#225219ff", width: "100%", margin: 0 }}>
               <p className={styles.button_text}>Add new post</p>

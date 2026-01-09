@@ -33,7 +33,7 @@
 }
 .above_input {
     font-size: 16px;
-    padding: 0px 8px;
+    padding: 0 8px;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -56,9 +56,9 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .checkbox {
-    display: flex;
-    flex-direction: row;
+    align-items: center;
     gap: 5px;
+    justify-self: center;
     justify-content: center;
 }
 .button_box {
