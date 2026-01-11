@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.model.LoginRequest;
 import com.example.backend.model.User;
+import com.example.backend.model.UserResponse;
 import com.example.backend.repository.UserRepository;
 
 
@@ -27,12 +28,25 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public static UserResponse toUserResponse(User user) {
+        return new UserResponse(
+            user.getUsername(),
+            user.getName(),
+            user.getSurname(),
+            user.getBiography(),
+            user.getProfilePic()
+        );
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+            .map(UserService::toUserResponse)
+            .toList();
+    }
+
+    public Optional<UserResponse> getUserByUsername(String username) {
+    return userRepository.findByUsername(username)
+        .map(UserService::toUserResponse);
     }
 
     public ResponseEntity<?> registerUser(User newUser) {
@@ -58,8 +72,10 @@ public class UserService {
         User savedUser = userRepository.save(newUser);
         String token = jwtService.generateToken(savedUser);
 
+        UserResponse response = toUserResponse(savedUser);
+
         return new ResponseEntity<>(Map.of(
-            "user", savedUser,
+            "user", response,
             "token", token
         ), HttpStatus.CREATED);
     }
@@ -96,12 +112,15 @@ public class UserService {
         return userRepository.findByUsername(username)
         // because we return 2 different types based on situation
             .<ResponseEntity<?>>map(user -> {
-                user.setName(updatedUser.getName());
-                user.setSurname(updatedUser.getSurname());
+                if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+                if (updatedUser.getSurname() != null) user.setSurname(updatedUser.getSurname());
                 user.setBiography(updatedUser.getBiography());
                 user.setProfilePic(updatedUser.getProfilePic());
                 userRepository.save(user);
-                return new ResponseEntity<>(user, HttpStatus.OK);
+
+                UserResponse response = toUserResponse(user);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
             })
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist."));
     }
@@ -111,9 +130,11 @@ public class UserService {
         return ResponseEntity.ok(List.of());
     }
 
-    List<User> foundUsers = userRepository.findByUsernameContainingIgnoreCase(query);
-
-    List<User> limitedResults = foundUsers.stream().limit(10).toList();  // max 10
+    List<UserResponse> limitedResults = userRepository.findByUsernameContainingIgnoreCase(query)
+            .stream()
+            .limit(10)
+            .map(UserService::toUserResponse)
+            .toList();
 
     return ResponseEntity.ok(limitedResults);
     }

@@ -85,6 +85,13 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
+    public void shouldReturn404WhenUserDoesNotExist() throws Exception {
+        mockMvc.perform(get("/api/users/ghost_user"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @WithMockUser(username = "user1")
     public void shouldGetUserDataByUsername() throws Exception {
         mockMvc.perform(get("/api/users/user1"))
@@ -100,6 +107,14 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldNotExposePasswordInJson() throws Exception {
+        mockMvc.perform(get("/api/users/user1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
     //////////////// REGISTRATION /////////////////
 
     @Test
@@ -113,7 +128,12 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUser)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                // token should be created
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.user.username").value("user3"))
+                // there should not be password in response
+                .andExpect(jsonPath("$.user.password").doesNotExist());
 
         assertTrue(userRepository.findByUsername("user3").isPresent());
     }
@@ -141,7 +161,8 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists());
     }
 
     @Test
@@ -217,6 +238,93 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedData)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldKeepPasswordIntactAfterNameUpdate() throws Exception {
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname("Surname");
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk());
+
+        User savedUser = userRepository.findByUsername("user1").get();
+        assertTrue(passwordEncoder.matches("pass1", savedUser.getPassword()));
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldKeepCreationDateIntactAfterNameUpdate() throws Exception {
+        User oldUser = userRepository.findByUsername("user1").get();
+
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname("Surname");
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk());
+
+        User savedUser = userRepository.findByUsername("user1").get();
+        assertEquals(oldUser.getCreationDate(), savedUser.getCreationDate());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldAllowClearingBiography() throws Exception {
+        User updatedData = new User();
+        updatedData.setName("First");
+        updatedData.setSurname("User");
+        updatedData.setBiography(null);
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.biography").isEmpty());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldNotChangeNameToNull() throws Exception {
+        User oldUser = userRepository.findByUsername("user1").get();
+
+        User updatedData = new User();
+        updatedData.setName(null);
+        updatedData.setSurname("User");
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").isNotEmpty());
+
+        User savedUser = userRepository.findByUsername("user1").get();
+        assertEquals(oldUser.getName(), savedUser.getName());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldNotChangeSurnameToNull() throws Exception {
+        User oldUser = userRepository.findByUsername("user1").get();
+
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname(null);
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.surname").isNotEmpty());
+
+        User savedUser = userRepository.findByUsername("user1").get();
+        assertEquals(oldUser.getSurname(), savedUser.getSurname());
     }
 
 
