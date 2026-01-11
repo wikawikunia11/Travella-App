@@ -72,7 +72,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldAccessUsersWithoutAuth() throws Exception {
+    public void shouldNotAccessUsersWithoutAuth() throws Exception {
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    public void shouldAccessUsersWithAuth() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk());
     }
@@ -149,7 +156,39 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void shouldReturnBadRequestWhenLoginBodyIsWrong() throws Exception {
+        mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"invalid\": \"data\" }"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldFailLoginWithDifferentCaseUsername() throws Exception {
+        LoginRequest login = new LoginRequest();
+        login.setUsername("USER1");
+        login.setPassword("pass1");
+
+        mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isBadRequest());
+    }
+
     //////////////// DATA UPDATE /////////////////
+
+    @Test
+    public void shouldDenyUpdateWithoutAuth() throws Exception {
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname("Surname");
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @WithMockUser(username = "user1")
