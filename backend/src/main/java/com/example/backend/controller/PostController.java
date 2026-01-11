@@ -61,7 +61,6 @@ public class PostController {
     }
 
 
-
     @GetMapping("/all")
     public List<Post> getAllPosts() {
         return postService.getAllPosts();
@@ -95,8 +94,15 @@ public class PostController {
 
     @DeleteMapping("/{idPost}")
     public ResponseEntity<?> deletePost(@PathVariable Long idPost, Principal principal) {
+        try {
             postService.deletePost(idPost, principal.getName());
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("Unauthorized to delete this post")) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/user/{username}")
