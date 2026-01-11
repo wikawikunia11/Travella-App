@@ -1,91 +1,192 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.User;
-import com.example.backend.service.FriendshipService;
-import com.example.backend.service.JwtService;
-import com.example.backend.service.PostService;
-import com.example.backend.service.UserService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-import java.util.List;
+import com.example.backend.model.LoginRequest;
+import com.example.backend.model.User;
+import com.example.backend.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockito.BDDMockito.given;
-
-
-@WebMvcTest(UserController.class)
-@AutoConfigureWebTestClient // web test client configuration
-class UserControllerTest {
+@ActiveProfiles("test")
+@SpringBootTest
+@AutoConfigureMockMvc
+public class UserControllerTest {
 
     @Autowired
-	private WebTestClient webTestClient;
+    private MockMvc mockMvc;
 
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private JwtService jwtService;
-    @MockBean
-    private UserDetailsService userDetailsService;
-    @MockBean
-    private AuthenticationProvider authenticationProvider;
+    @Autowired
+    private UserRepository userRepository;
 
-    @Test
-    @WithMockUser // user simulation for authentication
-	void greetingShouldReturnDefaultMessage() {
-		webTestClient.get().uri("/api/message")
-				.exchange()
-				.expectBody(String.class)
-				.isEqualTo("Hello from the backend! balbinka wita");
-	}
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    @Test
-    void restrictedAccessToUsers() throws Exception {
-        webTestClient.get().uri("/api/users")
-                .exchange()
-                .expectStatus().isUnauthorized();
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        userRepository.deleteAll();
+
+        User user1 = new User();
+        user1.setUsername("user1");
+        user1.setPassword(passwordEncoder.encode("pass1"));
+        user1.setName("First");
+        user1.setSurname("User");
+        userRepository.save(user1);
+
+        User user2 = new User();
+        user2.setUsername("user2");
+        user2.setPassword(passwordEncoder.encode("pass2"));
+        user2.setName("Second");
+        user2.setSurname("User");
+        userRepository.save(user2);
     }
 
+    //////////////// DATA ACCESS /////////////////
 
     @Test
     @WithMockUser
-    void shouldReturnAllUsers() throws Exception {
-        // --- GIVEN ---
-        User user1 = new User();
-        user1.setUsername("balbinka");
-        User user2 = new User();
-        user2.setUsername("janusz");
-        List<User> allUsers = Arrays.asList(user1, user2);
+    public void shouldGetBackendMessage() throws Exception {
+        mockMvc.perform(get("/api/message"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello from the backend! balbinka wita"));
+    }
 
-        given(userService.getAllUsers()).willReturn(allUsers);
+    @Test
+    public void shouldAccessUsersWithoutAuth() throws Exception {
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk());
+    }
 
-        // --- WHEN ---
-        webTestClient.get().uri("/api/users")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldGetUserDataByUsername() throws Exception {
+        mockMvc.perform(get("/api/users/user1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("user1"))
+                .andExpect(jsonPath("$.name").value("First"))
+                .andExpect(jsonPath("$.surname").value("User"));
+    }
 
-        // --- THEN ---
-                .expectStatus().isOk()
-                .expectBodyList(User.class)
-                    .hasSize(2)
-                    // .contains, .jsonPath, .json
-                    .contains(user1)
-                    .contains(user2)
-                    .value(users -> {
-                        // BodyList = List<User>
-                        assert users.get(0).getUsername().equals("balbinka");
-                        assert users.get(1).getUsername().equals("janusz");
-                    });
+    @Test
+    public void shouldDenyAccesToUserData() throws Exception {
+        mockMvc.perform(get("/api/users/user1"))
+                .andExpect(status().isForbidden());
+    }
+
+    //////////////// REGISTRATION /////////////////
+
+    @Test
+    public void shouldRegisterUserSuccessfully() throws Exception {
+        User newUser = new User();
+        newUser.setUsername("user3");
+        newUser.setPassword("pass3");
+        newUser.setName("Jan");
+        newUser.setSurname("Kowalski");
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(status().isCreated());
+
+        assertTrue(userRepository.findByUsername("user3").isPresent());
+    }
+
+    @Test
+    public void shouldReturnErrorWhenRegisteringExistingUsername() throws Exception {
+        User duplicateUser = new User();
+        duplicateUser.setUsername("user1");
+        duplicateUser.setPassword("pass3");
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(duplicateUser)))
+                .andExpect(status().isBadRequest());
+    }
+
+    //////////////// lOGIN /////////////////
+
+    @Test
+    public void shouldLoginSuccessfully() throws Exception {
+        LoginRequest login = new LoginRequest();
+        login.setUsername("user1");
+        login.setPassword("pass1");
+
+        mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldFailLoginWithWrongPassword() throws Exception {
+        LoginRequest login = new LoginRequest();
+        login.setUsername("user1");
+        login.setPassword("wrong_password");
+
+        mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isBadRequest());
+    }
+
+    //////////////// DATA UPDATE /////////////////
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldUpdateOwnProfile() throws Exception {
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname("Surname");
+
+        mockMvc.perform(put("/api/users/user1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isOk());
+
+        User savedUser = userRepository.findByUsername("user1").get();
+        assertEquals("Name", savedUser.getName());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldNotUpdateOtherUserProfile() throws Exception {
+        User updatedData = new User();
+        updatedData.setName("Name");
+        updatedData.setSurname("Surname");
+
+        mockMvc.perform(put("/api/users/user2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedData)))
+                .andExpect(status().isForbidden());
+    }
+
+
+    //////////////// DELETE /////////////////
+
+    @Test
+    public void shouldNotDeleteUserWithoutAuth() throws Exception {
+        mockMvc.perform(delete("/api/users/user1"))
+                .andExpect(status().isForbidden());
     }
 
 }
