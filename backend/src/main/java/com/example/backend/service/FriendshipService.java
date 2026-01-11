@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,10 +51,15 @@ public class FriendshipService {
             return ResponseEntity.badRequest().body("Can't add yourself to friends.");
         }
 
-        User user = userRepository.findByUsername(loggedInUsername)
-                .orElseThrow(() -> new RuntimeException("User " + loggedInUsername + " does not exist."));
-        User friend = userRepository.findByUsername(friendUsername)
-                .orElseThrow(() -> new RuntimeException("User " + friendUsername + " does not exist."));
+        Optional<User> userOpt = userRepository.findByUsername(loggedInUsername);
+        Optional<User> friendOpt = userRepository.findByUsername(friendUsername);
+
+        if (userOpt.isEmpty() || friendOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        User user = userOpt.get();
+        User friend = friendOpt.get();
 
         Friendship friendship = new Friendship(user.getIdUser(), friend.getIdUser());
 
@@ -67,10 +73,15 @@ public class FriendshipService {
 
     @Transactional
     public ResponseEntity<?> removeFriend(String loggedInUsername, String friendUsername) {
-        User user = userRepository.findByUsername(loggedInUsername)
-                .orElseThrow(() -> new RuntimeException("User " + loggedInUsername + " does not exist."));
-        User friend = userRepository.findByUsername(friendUsername)
-                .orElseThrow(() -> new RuntimeException("User " + friendUsername + " does not exist."));
+        Optional<User> userOpt = userRepository.findByUsername(loggedInUsername);
+        Optional<User> friendOpt = userRepository.findByUsername(friendUsername);
+
+        if (userOpt.isEmpty() || friendOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        User user = userOpt.get();
+        User friend = friendOpt.get();
 
         Friendship friendship = new Friendship(user.getIdUser(), friend.getIdUser());
 

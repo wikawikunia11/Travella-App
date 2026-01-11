@@ -116,6 +116,6 @@ public class UserService {
     List<User> limitedResults = foundUsers.stream().limit(10).toList();  // max 10
 
     return ResponseEntity.ok(limitedResults);
-}
+    }
 
 }
