@@ -86,7 +86,7 @@ public class FriendsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Added user2 to friends."));
 
-        assertTrue(friendshipRepository.findAll().size() == 1);
+        assertEquals(1, friendshipRepository.findAll().size());
     }
 
     @Test
