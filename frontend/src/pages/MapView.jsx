@@ -38,7 +38,7 @@ export default function MapView({ width = "600px", height = "400px", markerData,
         center={[52.2297, 21.0122]}
         zoom={13}
         style={{ width: "100%", height: "100%" }}
-        key={markerData.map(m => m.id).join("-")}
+        key={center ? `${center[0]}-${center[1]}` : "default-map"}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
