@@ -40,10 +40,10 @@ CREATE TABLE posts (
     FOREIGN KEY (user_id) REFERENCES users_table(id_user)
 );
 
-CREATE TABLE description (
-    id_description SERIAL PRIMARY KEY
-    -- ........
-);
+-- CREATE TABLE description (
+--     id_description SERIAL PRIMARY KEY
+--     -- ........
+-- );
 
 
 CREATE TABLE medias (
