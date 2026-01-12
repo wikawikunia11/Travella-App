@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.example.backend.model.UserResponse;
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.model.LoginRequest;
@@ -35,14 +37,15 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{username}")
-    public User getUsername(@PathVariable String username) {
-        Optional<User> userOptional = userService.getUserByUsername(username);
-        return userOptional.orElse(null);
+    public ResponseEntity<UserResponse> getUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/users")

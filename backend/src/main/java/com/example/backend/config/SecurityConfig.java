@@ -2,6 +2,7 @@ package com.example.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -51,7 +52,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
 
-                .requestMatchers("/api/login", "/api/users", "/api/posts/all", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/login", "/api/posts/all", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .anyRequest().authenticated()
             )
             // can add role-based endpoints ex. .requestMatchers("/api/admin/**").hasRole("ADMIN")
