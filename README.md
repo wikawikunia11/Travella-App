@@ -13,24 +13,27 @@ Mateusz Klimaszewski
 Aplikacja webowa w stylu social media do dzielenia się wrażeniami z podróży
 
 # Mechanizm działania
-1. Użytkownik zakłada konto na portalu
-2. Użytkownik loguje się na konto
-3. Przy dodaniu posta pobierana jest lokalizacja użytkownika i obecna data, użytkownik wypełnia przygotowaną ankietę o miejscu pobytu
-4. Wyszukiwarka z filtrowaniem po lokalizacji
-5. W aplikacji widoczne są profile znajomych
-6. Użytkownik na profilu ma dostępną mapę z zaznaczonymi miejscami dodanych postów
+1. Użytkownik zakłada konto na portalu.
+2. Użytkownik loguje się na konto.
+3. Przy dodaniu posta pobierana jest lokalizacja użytkownika (lub wybierana), wpisywana data, użytkownik wypełnia przygotowaną ankietę o miejscu pobytu.
+4. Do każdego posta możliwe jest dodanie zdjęć w trakcie tworzenia.
+5. W aplikacji widoczne są profile znajomych.
+6. Wyszukiwarka nowych znajomych na podstawie dopasowania części szukanej nazwy użytkownika.
+7. Użytkownik na profilu ma dostępną mapę z zaznaczonymi miejscami dodanych postów oraz postów znajomych.
+8. Możliwa jest personalizacja profilu, edytowanie jego w trakcie korzystania z portalu.
 
 # Możliwe rozszerzenia
-1. Personalizacja profilu - dodawanie infromacji dodatkowych
-2. Dodawanie zdjęć do postów
-3. Przycisk do polubienia posta
-4. Dodawanie komentarzy do postów
+1. Statusy relacji znajomości - chęć bycia znajomymi musi być zatwierdzona przez obie strony.
+2. Rozwinięcie opisu postu na szczegółowe pola, np. czynności, pogoda, osoby towarzyszące.
+3. Wyszukiwarka z filtrowaniem po lokalizacji.
+
+# Polecenia potrzebne, żeby zbudować kontenery od początku (lub pobrać dodane zależności)
+```bash
+docker compose up -d --build
+```
 
 # Żeby uruchomić bazę danych od nowa (wywołać seed.sql)
 ```bash
 docker-compose down -v
 docker-compose up
 ```
-
-docker compose up -d --build
-docker compose down
