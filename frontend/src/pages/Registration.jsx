@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Registration.module.css';
 import logo from '../assets/logo.png';
@@ -7,7 +7,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 
 function Registration() {
-  const { login } = useUser();
+  const { user, login } = useUser();
   const navigate = useNavigate();
   const [type, setType] = useState('password');
   const [off, setOff] = useState(true);
@@ -54,6 +54,13 @@ function Registration() {
             setType('password')
         }
     }
+
+    useEffect(() => {
+        if (user !== null) {
+            navigate(`/profile/${user.username}`);
+        }
+    });
+
     return (
     <div className={styles.root}>
       <div className={styles.image}></div>
