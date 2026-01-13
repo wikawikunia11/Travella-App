@@ -1,0 +1,121 @@
+package com.example.backend.controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+
+import com.example.backend.model.Post;
+import com.example.backend.model.PostImage;
+import com.example.backend.service.PostService;
+
+import java.nio.file.Files;
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/posts")
+public class PostController {
+    @Autowired
+    private PostService postService;
+
+    @GetMapping("/{postId}/images")
+    public ResponseEntity<List<String>> getPostImages(@PathVariable Long postId) {
+        try {
+            List<String> images = postService.getPostImages(postId);
+            return ResponseEntity.ok(images);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/{postId}/images/{filename}")
+    public ResponseEntity<Resource> getImageFile(@PathVariable Long postId, @PathVariable String filename
+    ) throws IOException {
+        try {
+            Resource resource = postService.getImageFile(postId, filename);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(resource.getFile().toPath()))
+                    .body(resource);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("/all")
+    public List<Post> getAllPosts() {
+        return postService.getAllPosts();
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<Post> addPost(
+            @RequestParam("caption") String caption,
+            @RequestParam("description") String description,
+            @RequestParam("latitude") double latitude,
+            @RequestParam("longitude") double longitude,
+            @RequestParam("visitDate") String visitDate,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            Principal principal
+    ) {
+        try {
+            LocalDate visit = LocalDate.parse(visitDate);
+
+            Post createdPost = postService.createPost(
+                    caption, description, latitude, longitude, visit, images, principal.getName()
+            );
+
+            return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/{idPost}")
+    public ResponseEntity<?> deletePost(@PathVariable Long idPost, Principal principal) {
+        try {
+            postService.deletePost(idPost, principal.getName());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("Unauthorized to delete this post")) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<Post>> getUserPosts(@PathVariable String username) {
+        try {
+            List<Post> posts = postService.getPostsByUsername(username);
+            return ResponseEntity.ok(posts);
+        } catch (RuntimeException e) {
+             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // get mapping by post id
+
+    // get mapping by list of users -> friends posts
+}

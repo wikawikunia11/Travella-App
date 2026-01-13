@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext';
 import styles from './Login.module.css';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.png'
+import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOffOutline } from "react-icons/io5";
 
 function Login() {
    const [message, setMessage] = useState('');
+   const [type, setType] = useState('password');
+   const [off, setOff] = useState(true);
    const navigate = useNavigate();
-   const { login } = useUser();
+   const { user, login } = useUser();
 
     function handleLogin(e) {
         e.preventDefault();
@@ -26,12 +30,33 @@ function Login() {
               setMessage("Wrong username or password - try again.")
               throw new Error(message);
             }
-            const userData = { id: null, username: username }; // Simplified based on your code
-            login(userData);
-            navigate(`/profile/${data.username}`);
-            })
-          .catch(error => console.error('', error));
+            return response.json();
+          })
+          .then(apiResponse => {
+          const userData = {
+              username: username
+          };
+          const tokenValue = apiResponse.token;
+          login(userData, tokenValue);
+          navigate(`/profile/${username}`);
+      })
+      .catch(error => console.error('Login error:', error));
     }
+
+    const handleToggle = () => {
+        setOff(!off);
+        if (type==='password'){
+            setType('text')
+        } else {
+            setType('password')
+        }
+    }
+
+    useEffect(() => {
+        if (user !== null) {
+            navigate(`/profile/${user.username}`);
+        }
+    });
 
     return (
     <div className={styles.root}>
@@ -47,10 +72,16 @@ function Login() {
             <p className={styles.above_input}>Login</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Password</p>
-            <input name="password" className={styles.input_box} placeholder="Password" type="password"/>
-            <button type="submit" className={styles.button_box}>
-              <p className={styles.button_text}>Log in</p>
-            </button>
+              <div className={styles.input_box} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <input name="password" placeholder="Password" type={type}
+                         autoComplete="off"/>
+                  <span className="flex justify-around items-center" onClick={handleToggle}>
+                    {off ? (<IoEyeOffOutline onClick={handleToggle} />) : (<IoEyeOutline onClick={handleToggle} />)}
+                  </span>
+              </div>
+              <button type="submit" className={styles.button_box}>
+                  <p className={styles.button_text}>Log in</p>
+              </button>
           </form>
           <div className={styles.register}>
             <p className={styles.register_text}>Don't have an account?

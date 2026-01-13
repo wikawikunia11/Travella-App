@@ -1,15 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Registration.module.css';
 import logo from '../assets/logo.png';
 import { useUser } from '../UserContext';
+import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOffOutline } from "react-icons/io5";
 
 function Registration() {
-  const { login } = useUser();
+  const { user, login } = useUser();
   const navigate = useNavigate();
+  const [type, setType] = useState('password');
+  const [off, setOff] = useState(true);
 
   const [message, setMessage] = useState('');
-    function search(formData) {
+    function register(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
         const userData = {
           username: formData.get("username"),
           password: formData.get("password"),
@@ -22,20 +28,38 @@ function Registration() {
           body: JSON.stringify(userData)
         };
         fetch('http://localhost:8080/api/users', requestOptions)
-          .then(response => {
+          .then(async response => {
             if (!response.ok) {
-              setMessage("Choose another username.")
-              throw new Error(message);
+              const errorMess = await response.text();
+              if (errorMess.includes("required")) setMessage("Please fill in all fields.")
+              else setMessage("Choose another username.")
+              throw new Error(errorMess);
             }
             return response.json();
-            })
-          .then(data => {
-            const user = { id: null, username: userData.username }; // Simplified based on your code
-            login(user);
-            navigate(`/profile/${userData.username}`);
           })
-          .catch(error => console.error('', error));
+          .then(data => {
+              localStorage.setItem('token', data.token);
+              login(data.user, data.token);
+              navigate(`/profile/${data.user.username}`);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
     }
+    const handleToggle = () => {
+        setOff(!off);
+        if (type==='password'){
+            setType('text')
+        } else {
+            setType('password')
+        }
+    }
+
+    useEffect(() => {
+        if (user !== null) {
+            navigate(`/profile/${user.username}`);
+        }
+    });
 
     return (
     <div className={styles.root}>
@@ -47,7 +71,7 @@ function Registration() {
         </div>
         <div className={styles.form}>
           <header className={styles.text_title}>Start your journey with us 🚀</header>
-          <form className={styles.input} onSubmit={search}>
+          <form className={styles.input} onSubmit={register}>
             <p className={styles.above_input}>Name</p>
             <input name="name" className={styles.input_box} placeholder="Your name"/>
             <p className={styles.above_input}>Surname</p>
@@ -55,7 +79,13 @@ function Registration() {
             <p className={styles.above_input}>Create username</p>
             <input name="username" className={styles.input_box} placeholder="Username"/>
             <p className={styles.above_input}>Create password</p>
-            <input name="password" className={styles.input_box} placeholder="Password"/>
+          <div className={styles.input_box} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <input name="password" placeholder="Password" type={type}
+                     autoComplete="off"/>
+              <span className="flex justify-around items-center" onClick={handleToggle}>
+                {off ? (<IoEyeOffOutline onClick={handleToggle} />) : (<IoEyeOutline onClick={handleToggle} />)}
+              </span>
+          </div>
             <button type="submit" className={styles.button_box}>
               <p className={styles.button_text}>Register</p>
             </button>

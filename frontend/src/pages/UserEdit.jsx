@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useUser } from '../UserContext';
 
 function UserEdit() {
   const { username } = useParams();
   const navigate = useNavigate();
+  const { token, user: loggedInUser, refresh, setRefresh} = useUser();
   const [user, setUser] = useState({
     name: '',
     surname: '',
@@ -16,7 +18,22 @@ function UserEdit() {
   const defaultAvatar = "/vite.svg";
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/users/username/${username}`)
+    if (loggedInUser && loggedInUser.username !== username) {
+      alert("Not authorized to perform this action.");
+      navigate(`/profile/${username}`);
+    }
+  }, [loggedInUser, username, navigate]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetch(`http://localhost:8080/api/users/${username}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
       .then(response => {
         if (!response.ok) throw new Error("Failed to fetch user");
         return response.json();
@@ -33,7 +50,7 @@ function UserEdit() {
         setLoading(false);
       })
       .catch(err => { setError(err.message); setLoading(false); });
-  }, [username]);
+  }, [username, token, refresh]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,16 +58,23 @@ function UserEdit() {
   };
 
   const handleSave = () => {
-    fetch(`http://localhost:8080/api/users/${userID}`, {
+    fetch(`http://localhost:8080/api/users/${username}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(user)
     })
       .then(response => {
-        if (!response.ok) throw new Error("Failed to save user");
+        if (!response.ok) {
+          if (response.status === 403) throw new Error("Forbidden");
+          throw new Error("Failed to save user");
+        }
         return response.json();
       })
       .then(() => {
+        setRefresh(true);
         navigate(`/profile/${username}`);
       })
       .catch(err => setError(err.message));
@@ -60,24 +84,27 @@ function UserEdit() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "20px", padding: "20px", width: '100%' }}>
       <p>{user.id}</p>
       <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <img
           src={user.profilePic || defaultAvatar}
           alt="profile"
-          style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+          style={{ width: "80px", height: "80px", borderRadius: "50%",
+            objectFit: 'scale-down',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'}}
         />
         <p style={{ fontSize: "1.5rem" }}>{user.username}</p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", textAlign: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", textAlign: "center", width: '100%' }}>
         <input
           type="text"
           name="name"
           value={user.name}
           onChange={handleChange}
           placeholder="First name"
+          style={{width: '30%', fontSize: '1rem', border: '1px solid #aeb1b6', borderRadius: '10px'}}
         />
         <input
           type="text"
@@ -85,20 +112,22 @@ function UserEdit() {
           value={user.surname}
           onChange={handleChange}
           placeholder="Last name"
+          style={{width: '30%', fontSize: '1rem', border: '1px solid #aeb1b6', borderRadius: '10px'}}
         />
         <textarea
           name="biography"
           value={user.biography}
           onChange={handleChange}
           placeholder="Biography"
+          style={{width: '80%', fontSize: '1rem', fontFamily: 'Arial'}}
           rows={4}
         />
-        <input
-          type="text"
+        <textarea
           name="profilePic"
           value={user.profilePic}
           onChange={handleChange}
           placeholder="Profile picture URL"
+          style={{width: '80%', fontSize: '1rem', fontFamily: 'Arial'}}
         />
       </div>
 

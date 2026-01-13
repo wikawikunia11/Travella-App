@@ -20,26 +20,34 @@ services:
     build: ./backend
     ports:
       - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
     environment:
       DB_HOST: db
-      DB_USER: app
-      DB_PASS: secret
-      DB_NAME: appdb
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   db:
     image: postgres:16
     restart: always
     environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: appdb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d  # pliki init.sql i seed.sql
     ports:
       - "5432:5432"
+    healthcheck:  # check if DB is ready
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 volumes:
   postgres_data:

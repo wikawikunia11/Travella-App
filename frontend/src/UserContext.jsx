@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext(null);
 
@@ -8,23 +8,33 @@ export const UserProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // login function updates state and localStorage
-  const login = (userData) => {
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || null;
+  });
+  const [refresh, setRefresh] = useState(false);
+
+  const login = (userData, tokenValue) => {
+
     setUser(userData);
+    setToken(tokenValue);
+
     localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", tokenValue);
   };
 
   // logout function clears state and localStorage
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, token, login, logout, refresh, setRefresh }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useUser = () => useContext(UserContext) ?? null;

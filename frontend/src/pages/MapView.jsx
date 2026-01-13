@@ -1,4 +1,5 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import PostMarker from "./PostMarker";
@@ -12,11 +13,17 @@ L.Icon.Default.mergeOptions({
     "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-export default function MapView({ width = "600px", height = "400px", markerData, markerClicked }) {
-  // const defaultPosition = [52.2297, 21.0122];
-  // const position = markerPosition || defaultPosition;
-  const postList = markerData.map(m => <PostMarker postInfo={m} markerClicked={markerClicked}/>) || {};
+function RecenterAutomatically({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.setView(center, 15, { animate: true });
+    }
+  }, [center, map]);
+  return null;
+}
 
+export default function MapView({ width = "600px", height = "400px", markerData, markerClicked, center }) {
   return (
     <div
       style={{
@@ -31,12 +38,22 @@ export default function MapView({ width = "600px", height = "400px", markerData,
         center={[52.2297, 21.0122]}
         zoom={13}
         style={{ width: "100%", height: "100%" }}
+        key={center ? `${center[0]}-${center[1]}` : "default-map"}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap"
         />
-        {postList}
+
+        <RecenterAutomatically center={center} />
+
+        {markerData.map(post => (
+          <PostMarker
+            key={post.id}
+            postInfo={post}
+            markerClicked={markerClicked}
+          />
+        ))}
       </MapContainer>
     </div>
   );
