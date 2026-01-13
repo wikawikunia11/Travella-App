@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext';
 import styles from './Login.module.css';
@@ -11,7 +11,7 @@ function Login() {
    const [type, setType] = useState('password');
    const [off, setOff] = useState(true);
    const navigate = useNavigate();
-   const { user, login } = useUser();
+   const { login } = useUser();
 
     function handleLogin(e) {
         e.preventDefault();
@@ -51,12 +51,6 @@ function Login() {
             setType('password')
         }
     }
-
-    useEffect(() => {
-        if (user !== null) {
-            navigate(`/profile/${user.username}`);
-        }
-    });
 
     return (
     <div className={styles.root}>
