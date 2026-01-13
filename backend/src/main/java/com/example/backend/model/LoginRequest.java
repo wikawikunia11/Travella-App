@@ -7,6 +7,5 @@ public class LoginRequest {
     private String username;
     private String password;
 
-    // JPA needed blanck constructor
     public LoginRequest() {}
 }

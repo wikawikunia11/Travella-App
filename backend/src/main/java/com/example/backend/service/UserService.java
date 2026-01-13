@@ -2,7 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.model.LoginRequest;
 import com.example.backend.model.User;
-import com.example.backend.model.UserResponse;
+import com.example.backend.model.UserResponseDTO;
 import com.example.backend.repository.UserRepository;
 
 
@@ -28,8 +28,8 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
-    public static UserResponse toUserResponse(User user) {
-        return new UserResponse(
+    public static UserResponseDTO toUserResponse(User user) {
+        return new UserResponseDTO(
             user.getUsername(),
             user.getName(),
             user.getSurname(),
@@ -38,13 +38,13 @@ public class UserService {
         );
     }
 
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll().stream()
             .map(UserService::toUserResponse)
             .toList();
     }
 
-    public Optional<UserResponse> getUserByUsername(String username) {
+    public Optional<UserResponseDTO> getUserByUsername(String username) {
     return userRepository.findByUsername(username)
         .map(UserService::toUserResponse);
     }
@@ -72,7 +72,7 @@ public class UserService {
         User savedUser = userRepository.save(newUser);
         String token = jwtService.generateToken(savedUser);
 
-        UserResponse response = toUserResponse(savedUser);
+        UserResponseDTO response = toUserResponse(savedUser);
 
         return new ResponseEntity<>(Map.of(
             "user", response,
@@ -118,7 +118,7 @@ public class UserService {
                 user.setProfilePic(updatedUser.getProfilePic());
                 userRepository.save(user);
 
-                UserResponse response = toUserResponse(user);
+                UserResponseDTO response = toUserResponse(user);
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             })
@@ -130,7 +130,7 @@ public class UserService {
         return ResponseEntity.ok(List.of());
     }
 
-    List<UserResponse> limitedResults = userRepository.findByUsernameContainingIgnoreCase(query)
+    List<UserResponseDTO> limitedResults = userRepository.findByUsernameContainingIgnoreCase(query)
             .stream()
             .limit(10)
             .map(UserService::toUserResponse)

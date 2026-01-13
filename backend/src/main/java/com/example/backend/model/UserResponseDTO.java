@@ -5,12 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserResponse {
+public class UserResponseDTO {
     private String username;
     private String name;
     private String surname;
     private String biography;
     private String profilePic;
-
-    // no password and idUser
 }
