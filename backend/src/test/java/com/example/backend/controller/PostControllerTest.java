@@ -2,11 +2,9 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Post;
 import com.example.backend.model.User;
-import com.example.backend.model.Friendship;
 import com.example.backend.repository.PostImageRepository;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.FriendshipRepository;
 
 import com.example.backend.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -355,5 +352,12 @@ public class PostControllerTest {
     public void shouldNotGetImageFileWithoutToken() throws Exception {
         mockMvc.perform(get("/api/posts/1/images/test.jpg"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+        mockMvc.perform(get("/api/posts/user/nonexistent_user"))
+                .andExpect(status().isNotFound());
     }
 }

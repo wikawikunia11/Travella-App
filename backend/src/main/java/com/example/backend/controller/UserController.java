@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import java.util.Optional;
 import java.util.List;
 import java.security.Principal;
 
@@ -54,7 +53,10 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{username}")
-    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+    public ResponseEntity<?> deleteUser(@PathVariable String username, Principal principal) {
+        if (!principal.getName().equals(username)) {
+            return new ResponseEntity<>("You can only delete your own account.", HttpStatus.FORBIDDEN);
+        }
         return userService.deleteUser(username);
     }
 

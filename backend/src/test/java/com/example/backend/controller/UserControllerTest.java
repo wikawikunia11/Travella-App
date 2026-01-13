@@ -223,7 +223,8 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(updatedData)))
                 .andExpect(status().isOk());
 
-        User savedUser = userRepository.findByUsername("user1").get();
+        User savedUser = userRepository.findByUsername("user1")
+                .orElseThrow(() -> new AssertionError("User 'user1' not found in database!"));
         assertEquals("Name", savedUser.getName());
     }
 
@@ -336,4 +337,30 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldDeleteOwnAccountSuccessfully() throws Exception {
+        assertTrue(userRepository.findByUsername("user1").isPresent());
+
+        mockMvc.perform(delete("/api/users/user1"))
+                .andExpect(status().isOk());
+
+        assertTrue(userRepository.findByUsername("user1").isEmpty());
+    }
+
+    @Test
+    @WithMockUser(username = "non_existant_user")
+    public void shouldReturnForbiddenWhenDeletingNonExistentUser() throws Exception {
+        mockMvc.perform(delete("/api/users/non_existent_user"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void shouldNotDeleteOtherUserAccount() throws Exception {
+        mockMvc.perform(delete("/api/users/user2"))
+                .andExpect(status().isForbidden());
+
+        assertTrue(userRepository.findByUsername("user2").isPresent());
+    }
 }
