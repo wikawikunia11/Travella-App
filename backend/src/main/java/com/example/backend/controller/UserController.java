@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.example.backend.model.UserResponse;
+import com.example.backend.model.UserResponseDTO;
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.model.LoginRequest;
@@ -36,12 +36,12 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<UserResponse> getUsername(@PathVariable String username) {
+    public ResponseEntity<UserResponseDTO> getUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
             .map(ResponseEntity::ok)
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
