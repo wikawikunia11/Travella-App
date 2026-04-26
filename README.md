@@ -31,3 +31,32 @@ Gabryel Jundziłł
 - JWT-based authentication and security configuration (`SecurityConfig`)
 - Testing for user controller (`UserControllerTesting`), with coverage analysis to guide improvements
 - Minor React frontend contributions
+
+## Notes
+
+- Currently only supported in light mode
+
+## Environment setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+POSTGRES_DB=travella_db
+
+DB_USER=myuser
+DB_PASS=mypassword
+DB_NAME=travella_db
+```
+
+## How to run
+
+```bash
+# Build containers from scratch
+docker compose up -d --build
+
+# Reset the database (re-run seed.sql)
+docker-compose down -v
+docker-compose up
+```
