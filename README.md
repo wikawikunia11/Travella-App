@@ -1,39 +1,33 @@
-# PAP2025Z-Z13
+# Travella App
+A social media–style web application for sharing travel experiences.
 
-# Opiekun
-Mateusz Klimaszewski
+Built in collaboration with:
+Katarzyna Kuzora
+Weronika Grzybowska
+Gabryel Jundziłł
 
-# Zespół
-1. Wiktoria Małażewska
-2. Katarzyna Kuzora
-3. Weronika Grzybowska
-4. Gabryel Jundziłł
+## Tech stack
 
-# Temat projektu
-Aplikacja webowa w stylu social media do dzielenia się wrażeniami z podróży
+**Backend:** Java, Spring Boot, Spring Security, JWT
+**Frontend:** React
+**Database:** PostgreSQL
+**Other:** Docker, REST API
 
-# Mechanizm działania
-1. Użytkownik zakłada konto na portalu.
-2. Użytkownik loguje się na konto.
-3. Przy dodaniu posta pobierana jest lokalizacja użytkownika (lub wybierana), wpisywana data, użytkownik wypełnia przygotowaną ankietę o miejscu pobytu.
-4. Do każdego posta możliwe jest dodanie zdjęć w trakcie tworzenia.
-5. W aplikacji widoczne są profile znajomych.
-6. Wyszukiwarka nowych znajomych na podstawie dopasowania części szukanej nazwy użytkownika.
-7. Użytkownik na profilu ma dostępną mapę z zaznaczonymi miejscami dodanych postów oraz postów znajomych.
-8. Możliwa jest personalizacja profilu, edytowanie jego w trakcie korzystania z portalu.
+## How it works
 
-# Możliwe rozszerzenia
-1. Statusy relacji znajomości - chęć bycia znajomymi musi być zatwierdzona przez obie strony.
-2. Rozwinięcie opisu postu na szczegółowe pola, np. czynności, pogoda, osoby towarzyszące.
-3. Wyszukiwarka z filtrowaniem po lokalizacji.
+1. User creates an account on the platform.
+2. User logs in to their account.
+3. When adding a post, the user's location is retrieved (or manually selected), a date is entered, and the user fills out a prepared questionnaire about the visited place.
+4. Photos can be attached to each post during creation.
+5. Friends' profiles are visible within the app.
+6. A search feature lets users find new friends by partial username match.
+7. Each user's profile includes a map with pins marking locations of their posts and their friends' posts.
+8. Profile personalization and editing is available at any time.
 
-# Polecenia potrzebne, żeby zbudować kontenery od początku (lub pobrać dodane zależności)
-```bash
-docker compose up -d --build
-```
+## My contributions
 
-# Żeby uruchomić bazę danych od nowa (wywołać seed.sql)
-```bash
-docker-compose down -v
-docker-compose up
-```
+- Backend MVC architecture (Spring Boot) — config, controller, model, service, repository layers
+- User management — `UserController`, `UserService`, `UserResponse` DTO
+- JWT-based authentication and security configuration (`SecurityConfig`)
+- Testing for user controller (`UserControllerTesting`), with coverage analysis to guide improvements
+- Minor React frontend contributions
