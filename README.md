@@ -2,16 +2,16 @@
 A social media–style web application for sharing travel experiences.
 
 Built in collaboration with:
-Katarzyna Kuzora
-Weronika Grzybowska
+Katarzyna Kuzora,
+Weronika Grzybowska,
 Gabryel Jundziłł
 
 ## Tech stack
 
-**Backend:** Java, Spring Boot, Spring Security, JWT
-**Frontend:** React
-**Database:** PostgreSQL
-**Other:** Docker, REST API
+- **Backend:** Java, Spring Boot, Spring Security, JWT
+- **Frontend:** React
+- **Database:** PostgreSQL
+- **Other:** Docker, REST API
 
 ## How it works
 
